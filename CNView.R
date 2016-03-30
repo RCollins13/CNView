@@ -32,8 +32,9 @@ CNView <- function(chr,start,end,            #region to be plotted
   if(compression!="optimize"){
     if(!(compression >= 1 & all.equal(compression,as.integer(compression)))){
       stop('INPUT ERROR: compression parameter must either be "optomize" or positive integer > 1')}}
-  if(length(highlightcol)!=length(highlight)){
-    stop("INPUT ERROR: highlightcol must be same length as intervals to highlight")}
+  if(!(is.na(highlight)) & !(is.null(highlight))){
+    if(length(highlightcol)!=length(highlight)){
+      stop("INPUT ERROR: highlightcol must be same length as intervals to highlight")}}
   if(normDist!="genome"){
     if(window>normDist | !(all.equal(window,as.integer(window)))){
       stop('INPUT ERROR: window must be a positive, whole number less than normDist')}
@@ -61,6 +62,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   if("RMySQL" %in% rownames(installed.packages()) == FALSE)
   {warning("RMySQL package not installed.  Attempting to install from CRAN...")
    install.packages("RMySQL",repos="http://cran.rstudio.com/")}
+  library(RMySQL)
   if("plyr" %in% rownames(installed.packages()) == FALSE)
   {warning("plyr package not installed.  Attempting to install from CRAN...")
    install.packages("plyr",repos="http://cran.rstudio.com/")}
@@ -150,23 +152,27 @@ CNView <- function(chr,start,end,            #region to be plotted
   
   ##Normalize each row across all samples##
   cat("Performing inter-sample normalization...")
+  colnames(res)[1:3] <- c("Chr","Start","End")
   names <- colnames(res)
-  res[,4:ncol(res)] <- data.frame(t(apply(res[,4:ncol(res)],1,scale)))
-  res$mean <- apply(res[,4:ncol(res)],1,mean)
-  res$sd <- apply(res[,4:ncol(res)],1,sd)
-  res$median <- apply(res[,4:ncol(res)],1,median)
-  res$mad <- apply(res[,4:ncol(res)],1,mad)
+  oncol <- ncol(res)
+  res[,4:oncol] <- data.frame(t(apply(res[,4:oncol],1,scale)))
+  res$mean <- apply(res[,4:oncol],1,mean)
+  res$sd <- apply(res[,4:oncol],1,sd)
+  res$median <- apply(res[,4:oncol],1,median)
+  res$mad <- apply(res[,4:oncol],1,mad)
   cat("Complete\n")
   
   ##Subset View Window##
-  plotSet <- as.data.frame(apply(res[which(as.integer(as.character(res$Start)) <= end+window & as.integer(as.character(res$End)) >= start-window & as.character(res$Chr) == as.character(chr)),],
+  plotSet <- as.data.frame(apply(res[which(as.integer(as.character(res$Start)) <= end+window & 
+                                             as.integer(as.character(res$End)) >= start-window & 
+                                             as.character(res$Chr) == as.character(chr)),],
                                  2,function(col){
                                    return(as.numeric(as.character(col)))
                                  }))
   plotSet[is.na(plotSet)] <- 0
   
   ##Get Sample Indexes##
-  sampIdx <- as.vector(sapply(sampleID,function(val){grep(val,colnames(plotSet),ignore.case=T)}))
+  sampIdx <- as.vector(sapply(as.vector(sampleID),function(val){grep(val,colnames(plotSet),ignore.case=T)}))
   
   ##Output Options##
   if(plot==T){
@@ -397,8 +403,8 @@ CNView <- function(chr,start,end,            #region to be plotted
                  ytop=grep("Gene",UCSCtracks)-.1,
                  border=NA,col="lightgreen")
           }
-          for(i in unique(genes$geneName)){
-            text(x=(min(genes[which(genes$geneName==i),1])+max(genes[which(genes$geneName==i),2]))/2,
+          for(i in unique(genes$name2)){
+            text(x=(min(genes[which(genes$name2==i),1])+max(genes[which(genes$name2==i),2]))/2,
                  y=grep("Gene",UCSCtracks)-.5,
                  labels=i,
                  cex=0.75,col="darkgreen",font=4)

@@ -6,8 +6,6 @@
 CNView <- function(chr,start,end,            #region to be plotted
                    sampleID,                 #Character vector of IDs of samples to plot
                    covmatrix,                #Absolute path of coverage matrix. Header with sample IDs required
-                   include=NULL,             #specify character vector of strings to include IDs (grep-style execution)
-                   exclude=NULL,             #specify character vector of strings to exclude IDs (grep-style execution)
                    compression="optimize",   #compression factor for rebinning, if desired
                    highlight=NA,             #list of coordinate pairs; intervals to highlight; defaults to query interval; NULL disables
                    highlightcol="gold",      #vector of colors to shade each highlighted interval
@@ -272,7 +270,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                                   lwd=3,
                                   col=colval)))
       #Y Axis Label
-      mtext(paste("Normalized Sequencing t Score",sep=""),
+      mtext(paste("Norm. Depth t Score",sep=""),
             side=2,line=2,cex=0.7)
       #Print Sample ID if >1 sample
       if(nsamp>1){
@@ -311,7 +309,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                    bg="white",cex=0.8)
             text(x=par("usr")[1],
                  y=0.95*par("usr")[4],
-                 labels=paste(prettyNum(compression,big.mark=","),"kb Bins",sep=""),
+                 labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
                  font=4,pos=4)
           } else if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) < 0){
             legend("bottomright",
@@ -326,7 +324,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                    bg="white",cex=0.7)
             text(x=par("usr")[1],
                  y=0.95*par("usr")[3],
-                 labels=paste(prettyNum(binsize,big.mark=","),"bb Bins",sep=""),
+                 labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
                  font=4,pos=4)
           }
         }

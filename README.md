@@ -6,6 +6,8 @@ Visualization and annotation of CNVs from population-scale whole-genome sequenci
 All code copyright (c) 2016 Ryan Collins and is distributed under terms of the MIT license.  
 
 ---  
+![Example CNView plot of a complex maternally-inherited delINVdel in a quadruplex autism family](/ExamplePlot.CNView.pdf?raw=true "Example CNView plot of a complex maternally-inherited delINVdel in a quadruplex autism family")
+---  
 ## Table of Contents  
 #### Script documentation  
 - [bidirectionalEnrichment.sh](https://github.com/RCollins13/CNView#cnviewr)  

@@ -6,12 +6,12 @@ Visualization and annotation of CNVs from population-scale whole-genome sequenci
 All code copyright (c) 2016 Ryan Collins and is distributed under terms of the MIT license.  
 
 ---  
-![Example CNView plot of a complex maternally-inherited delINVdel in a quadruplex autism family](/ExamplePlot.CNView.pdf?raw=true "Example CNView plot of a complex maternally-inherited delINVdel in a quadruplex autism family")
+![Example CNView plot of a de novo 51kb duplication of SAE1 in an autism proband](/ExamplePlotA.CNView.jpg?raw=true "Example CNView plot of a de novo 51kb duplication of SAE1 in an autism proband")
 ---  
 ## Table of Contents  
 #### Script documentation  
 - [bidirectionalEnrichment.sh](https://github.com/RCollins13/CNView#cnviewr)  
-
+  
 #### Example usage  
 - [Example #1](https://github.com/RCollins13/CNView#example1)  
 ---  
@@ -23,6 +23,6 @@ Performs joint normalization of binned coverage values across a batch of WGS lib
 Example usage goes here
 ``` 
 **Usage Notes:**  
-1.  
+1.  TBD
 --- 
 

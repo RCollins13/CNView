@@ -520,6 +520,8 @@ option_list <- list(
   make_option(c("-t","--title"), type="character", default=NULL,
               help="custom title for plot [default %default]",
               metavar="character"),
+  make_option(c("-u","--noUCSC"), action="store_true", default=FALSE,
+              help="disable UCSC track plotting [default %default]"),
   make_option(c("-q","--quiet"), action="store_true", default=FALSE,
               help="disable verbose output [default %default]"),
   make_option(c("-l", "--nolegend"), action="store_false", default=TRUE,
@@ -572,6 +574,11 @@ if(is.null(opts$window)){
 }else{
   window=round(opts$window,0)
 }
+if(opts$noUCSC==TRUE){
+  UCSCtracks=NULL
+}else{
+  UCSCtracks=c("Gene","SegDup","Gap")
+}
 
 #Runs CNView function
 if(opts$quiet==T){
@@ -588,7 +595,7 @@ CNView(chr=args$args[1],
        window=window,
        yscale=yscale,
        normDist=opts$normDist,
-       UCSCtracks=c("Gene","SegDup","Gap"),
+       UCSCtracks=UCSCtracks,
        title=opts$title,
        output=args$args[6],
        plot=T,

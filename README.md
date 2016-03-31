@@ -11,8 +11,9 @@ All code copyright (c) 2016 Ryan Collins and is distributed under terms of the M
 
 CNView is a low-profile visualization tool for read depth in batches of next-generation sequencing libraries and, more specifically, for visually inspecting sites of [copy-number variation (CNV)](https://en.wikipedia.org/wiki/Copy-number_variation).  
 
-Like many depth-based CNV callers, CNView does not work on individual samples. Further, CNV read-depth signals become markedly clearer with the addition of multiple reference samples. While there is technically no minimum number of libraries to run CNView, generally >30 is advised.  
+Like many depth-based CNV callers, CNView does not work on individual samples. Further, CNV read-depth signals become markedly clearer with the addition of multiple reference samples. While technically CNView will run successfully from just two libraries, generally CNVs become clearly resolvable with at least 20 total samples jointly modelled.    
 
+---  
 ## Table of Contents  
 #### Script documentation  
 - [CNView.R](https://github.com/RCollins13/CNView#cnviewr)  

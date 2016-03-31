@@ -150,8 +150,14 @@ bash$ ./CNView.R 19 47636953 47687179 \
                  --ymin -6 \
                  --ymax 10 
 ```
-In this example, we're visualizing a 51kb duplication of *SAE1* that occurred *de novo* in the child (top panel, sample SFARI_d13874p1) and is present in neither the father (middle panel, SFARI_d13874fa) nor the mother (bottom panel, SFARI_d13874mo). In this example, we're also using a few more options to illustrate how to control the plot parameters:  
-- ```~/sampleIDs.tx``` is the path to the text file containing all sample IDs to be plotted (max of 300 samples/plot, which is an R system default, although this can be overwritten if needed).  
+In this example, we're visualizing a 51kb duplication of *SAE1* that occurred *de novo* in the child (top panel, sample SFARI_d13874p1) and is present in neither the father (middle panel, SFARI_d13874fa) nor the mother (bottom panel, SFARI_d13874mo). We're also using a few more options to illustrate how to control the plot parameters:  
+- ```~/sampleIDs.tx``` is the path to the text file containing all sample IDs to be plotted (max of 300 samples/plot, which is an R system default, although this can be overwritten if needed).  The contents of the file for this plot were:  
+```
+bash$ cat ~/sampleIDs.txt
+SFARI_d13874p1
+SFARI_d13874fa
+SFARI_d13874mo
+```  
 - ```-w 50000``` tells CNView to pad 50kb of additional space to the plotting window on both sides of the specified interval. By default, the plotting window will be padded with [61.8%](https://en.wikipedia.org/wiki/Golden_ratio) of the size of the interval.  
 - ```--ymim``` and ```--ymax``` override the default y axes, which is most useful when plotting multiple samples simultaneously to get a relative.  
 
@@ -175,18 +181,32 @@ Appending UCSC tracks... Complete
 ---  
 ###Example C  
 **Multiple Highlighted Intervals**  
+CNView also allows for customization of the highlighted interval(s), which can be useful if you have multiple regions of interest being visualized in the same plot.  
 ![Multiple Highlighted Intervals](/ExamplePlots/CNView.ExamplePlotC.jpg?raw=true "Multiple Highlighted Intervals")  
 ```
-bash$ ./CNView.R X 36605888 37148341 \
+bash$ ./CNView.R 3 8820980 8860556 \
                  ~/sampleIDs_2.txt \
                  ~/cov_matrix.bed \
                  ./ExamplePlots/CNView.ExamplePlotC.pdf \
                  --highlight ~/highlights.txt \
                  --title "Example Plot C: Multiple Highlighted Intervals" \
-                 -c 10 \
-                 -w 300000 \
-                 --ymin -10 \
-                 --ymax 3 
+                 --ymin -3 \
+                 --ymax 7  
+```
+Here, we're visualizing a 39.6kb [paired-duplication inversion, a.k.a. "dupINVdup"](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4571023/figure/fig1/), wherein two duplications flank the ends of an underlying inversion.  The distal (left-most) duplication is very small (611bp; highlighted in green), so is only marginally visible at our 1kb bin resoltuion, while the proximal (right-most) duplication is quite clear (36.9kb; highlighted in blue).  The custom highlighting is achieved by passing CNView the ```--highlight``` option with a corresponding three-column, tab-delimited file. Here, the contents of that file, ```~/highlights.txt```, were:  
+```
+bash$ cat ~/highlights.txt 
+8820980	8821591	forestgreen
+8823650	8860556	blue
+```  
+The first two columns correspond to the intervals to highlight, and the third column corresponds to the R color to shade the interval.  
+
+Also, like before we've plotted a full family trio (child/father/mother), but unlike [Example B](https://github.com/RCollins13/CNView#example-b) this variant is evidently inherited from the mother (child is top panel and mother is bottom).  The contents of the sample file, ```~/sampleIDs_2.txt```, were:  
+```
+bash$ cat ~/sampleIDs_2.txt
+SFARI_d14637p1
+SFARI_d14637fa
+SFARI_d14637mo
 ```
 ---  
 ##Example D  

@@ -10,15 +10,15 @@ All code copyright (c) 2016 Ryan Collins and is distributed under terms of the M
 
 ---  
 ## Table of Contents  
-#### General Information  
+####[General Information](https://github.com/RCollins13/CNView#general-information-1)  
 - [CNView Summary](https://github.com/RCollins13/CNView#cnview-summary)
 - [Accessing Reference Libraries](https://github.com/RCollins13/CNView#accessing-reference-libraries)  
 - [Citing CNView](https://github.com/RCollins13/CNView#citing-cnview)
 
-#### Script documentation  
+####[Code documentation]()  
 - [CNView.R](https://github.com/RCollins13/CNView#cnviewr)  
   
-#### Example usage  
+####[Example Usage]()  
 - [Example A: Canonical Deletion, Single Sample](https://github.com/RCollins13/CNView#example-a)  
 - [Example B: Multiple Samples on the Same x-Axis](https://github.com/RCollins13/CNView#example-b)  
 - [Example C: Multiple Highlighted Intervals](https://github.com/RCollins13/CNView#example-c)  
@@ -40,8 +40,8 @@ If you do not have access to an appropriate cohort of normative reference sample
 At present, there is no citation specifically for CNView, although we hope to publish the method in the future. If you use CNView, please cite either [Brand & Pillalamarri et al., 2014](http://www.ncbi.nlm.nih.gov/pubmed/25279985) or [Brand & Collins et al., 2015](http://www.ncbi.nlm.nih.gov/pubmed/26094575) until there is a dedicated CNView citation, as the CNView plots themselves are described in both.  
 
 ---  
-
-##CNView.R  
+##Code Documentation
+###CNView.R  
 Performs joint normalization of binned coverage values across a batch of WGS libraries and facilitates visualization. Also interfaces with UCSC Genome Browser to underlay several annotation tracks.  
 ```
 Usage: ./CNView.R [options] chr start end samples.list covmatrix.bed outfile
@@ -81,6 +81,7 @@ Options:
 1. Several base-level options not wrapped by Rscript (such as ```returnData``` or ```plot```). To access those features, import the R function directly and run from the R command prompt.  
 
 ---  
+##Example Usage
 ##Example A 
 ####Canonical Deletion Plotted in a Single Sample  
 The basic use-case for CNView is to visualize a known CNV locus 

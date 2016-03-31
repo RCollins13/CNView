@@ -3,7 +3,7 @@ Visualization and annotation of CNVs from population-scale whole-genome sequenci
 
 **Contact:** Ryan Collins (rcollins@chgr.mgh.harvard.edu)
 
-All code copyright (c) 2016 Ryan Collins and is distributed under terms of the MIT license.  
+All content copyright (c) 2016 Ryan Collins and is distributed under terms of the MIT license.  
 
 ---  
 ![CNView: Example CNV Visualization](/ExamplePlots/CNView.BannerExample.jpg?raw=true "CNView: Example CNV Visualization")  

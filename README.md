@@ -41,8 +41,8 @@ Options:
 	-n INTEGER, --normDist=INTEGER
 		distance outside region to use for normalization (both sides) [default 5000000]
 
-	-l, --legend
-		add legend to plot [default TRUE]
+	-l, --nolegend
+		disable legend on plot [default TRUE]
 
 	-h, --help
 		Show this help message and exit

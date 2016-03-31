@@ -50,4 +50,10 @@ Options:
 **Usage Notes:**  
 1.  TBD
 --- 
+Example A  
+```
+Rscript CNView.R --title="Example Plot A: Canonical Deletion, Single Sample" 2 178714141 178760307 SFARI_d12529p1 /Users/collins/scratch/SFARI_DeepSeq.nucleotide.1kb.cov_matrix.bed /Users/collins/Desktop/RCollins/Talkowski_Local/code/CNView/ExamplePlots/CNView.ExamplePlotA.pdf
+```
+---  
+Example B
 

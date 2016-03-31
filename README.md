@@ -13,9 +13,10 @@ All code copyright (c) 2016 Ryan Collins and is distributed under terms of the M
 - [CNView.R](https://github.com/RCollins13/CNView#cnviewr)  
   
 #### Example usage  
-- [Example A: Canonical Deletion, Single Sample](https://github.com/RCollins13/CNView#examplea)  
-- [Example B: Multiple Samples on the Same x-Axis](https://github.com/RCollins13/CNView#exampleb)  
-- [Example B: Multiple Highlighted Intervals](https://github.com/RCollins13/CNView#examplec)  
+- [Example A: Canonical Deletion, Single Sample](https://github.com/RCollins13/CNView#example-a)  
+- [Example B: Multiple Samples on the Same x-Axis](https://github.com/RCollins13/CNView#example-b)  
+- [Example C: Multiple Highlighted Intervals](https://github.com/RCollins13/CNView#example-c)  
+- [Example D: Disabled UCSC Annotations](https://github.com/RCollins13/CNView#example-d)  
 ---  
 
 ##CNView.R  
@@ -60,7 +61,7 @@ Options:
 ---  
 ##Example A 
 ####Canonical Deletion Plotted in a Single Sample
-![Canonical Deletion Plotted in a Single Sample](/ExamplePlots/CNView.ExamplePlotA.pdf?raw=true "Canonical Deletion Plotted in a Single Sample")  
+![Canonical Deletion Plotted in a Single Sample](/ExamplePlots/CNView.ExamplePlotA.jpg?raw=true "Canonical Deletion Plotted in a Single Sample")  
 ```
 bash$ ./CNView.R 2 178714141 178760307 SFARI_d12529p1 \
                  ~/cov_matrix.bed \
@@ -68,5 +69,43 @@ bash$ ./CNView.R 2 178714141 178760307 SFARI_d12529p1 \
                  --title "Example Plot A: Canonical Deletion, Single Sample"
 ```
 ---  
-Example B
-
+##Example B  
+####Multiple Samples on the Same x-Axis  
+![Multiple Samples on the Same x-Axis](/ExamplePlots/CNView.ExamplePlotB.jpg?raw=true "Multiple Samples on the Same x-Axis")  
+```
+bash$ ./CNView.R 19 47636953 47687179 \
+                 ~/sampleIDs.txt
+                 ~/cov_matrix.bed \
+                 ./ExamplePlots/CNView.ExamplePlotB.pdf \
+                 --title "Example Plot B: Multiple Samples on the Same x-Axis" \
+                 -w 50000 \
+                 --ymin -6 \
+                 --ymax 10 
+```
+---  
+##Example C  
+####Multiple Highlighted Intervals  
+![Multiple Highlighted Intervals](/ExamplePlots/CNView.ExamplePlotC.jpg?raw=true "Multiple Highlighted Intervals")  
+```
+bash$ ./CNView.R X 36605888 37148341 \
+                 ~/sampleIDs_2.txt \
+                 ~/cov_matrix.bed \
+                 ./ExamplePlots/CNView.ExamplePlotC.pdf \
+                 --highlight ~/highlights.txt \
+                 --title "Example Plot C: Multiple Highlighted Intervals" \
+                 -c 10 \
+                 -w 300000 \
+                 --ymin -10 \
+                 --ymax 3 
+```
+---  
+##Example D  
+####Disabled UCSC Annotations  
+![Disabled UCSC Annotations](/ExamplePlots/CNView.ExamplePlotD.jpg?raw=true "Disabled UCSC Annotations")  
+```
+bash$ ./CNView.R 2 178714141 178760307 SFARI_d12529p1 \
+                 ~/cov_matrix.bed \
+                 ./ExamplePlots/CNView.ExamplePlotD.pdf \
+                 --title "Example Plot D: Disabled UCSC Annotations" \
+                 --noUCSC
+```

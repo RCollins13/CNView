@@ -8,6 +8,11 @@ All code copyright (c) 2016 Ryan Collins and is distributed under terms of the M
 ---  
 ![CNView: Example CNV Visualization](/ExamplePlots/CNView.BannerExample.jpg?raw=true "CNView: Example CNV Visualization")  
 ---  
+
+CNView is a low-profile visualization tool for read depth in batches of next-generation sequencing libraries and, more specifically, for visually inspecting sites of [copy-number variation (CNV)](https://en.wikipedia.org/wiki/Copy-number_variation).  
+
+Like many depth-based CNV callers, CNView does not work on individual samples. Further, CNV read-depth signals become markedly clearer with the addition of multiple reference samples. While there is technically no minimum number of libraries to run CNView, generally >30 is advised.  
+
 ## Table of Contents  
 #### Script documentation  
 - [CNView.R](https://github.com/RCollins13/CNView#cnviewr)  
@@ -56,11 +61,12 @@ Options:
     Show this help message and exit
 ```
 **Usage Notes:**  
-- Several base-level options not wrapped by Rscript (such as ```returnData``` or ```plot```). To access those features, import the R function directly and run from the R command prompt.  
+1. Several base-level options not wrapped by Rscript (such as ```returnData``` or ```plot```). To access those features, import the R function directly and run from the R command prompt.  
 
 ---  
 ##Example A 
-####Canonical Deletion Plotted in a Single Sample
+####Canonical Deletion Plotted in a Single Sample  
+The basic use-case for CNView is to visualize a known CNV locus 
 ![Canonical Deletion Plotted in a Single Sample](/ExamplePlots/CNView.ExamplePlotA.jpg?raw=true "Canonical Deletion Plotted in a Single Sample")  
 ```
 bash$ ./CNView.R 2 178714141 178760307 SFARI_d12529p1 \

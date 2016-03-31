@@ -22,8 +22,8 @@ CNView <- function(chr,start,end,            #region to be plotted
                    legend=T,                 #logical option to plot legend
                    output=NULL,              #path to output as pdf. If NULL, will plot to active device
                    plot=TRUE,                #logical option to disable plot step; mandatory for output!=NULL
-                   returnData=FALSE){        #logical option to return df of all normalized coverage values
-  
+                   returnData=FALSE,         #logical option to return df of all normalized coverage values
+                   quiet=FALSE){             #logical option to disable verbose output
   
   ##Sanity check input##
   if(!(is.numeric(c(start,end)) & end > start)){
@@ -66,24 +66,24 @@ CNView <- function(chr,start,end,            #region to be plotted
   if("RMySQL" %in% rownames(installed.packages()) == FALSE)
   {warning("RMySQL package not installed.  Attempting to install from CRAN...")
    install.packages("RMySQL",repos="http://cran.rstudio.com/")}
-  library(RMySQL)
+  suppressPackageStartupMessages(library(RMySQL))
   if("plyr" %in% rownames(installed.packages()) == FALSE)
   {warning("plyr package not installed.  Attempting to install from CRAN...")
    install.packages("plyr",repos="http://cran.rstudio.com/")}
-  library(plyr)
+  suppressPackageStartupMessages(library(plyr))
   if("MASS" %in% rownames(installed.packages()) == FALSE)
   {warning("MASS package not installed.  Attempting to install from CRAN...")
    install.packages("MASS",repos="http://cran.rstudio.com")}
-  library(MASS)  
+  suppressPackageStartupMessages(library(MASS))
   
   ##Connects to UCSC, if necessary##
   if(!(is.null(UCSCtracks))){
-    cat("Attempting to connect to UCSC Genome Browser...")
+    if(quiet==F){cat("Attempting to connect to UCSC Genome Browser...")}
     UCSC <- dbConnect(MySQL(),
                       user='genome',
                       dbname='hg19',
                       host='genome-mysql.cse.ucsc.edu')
-    cat(" Complete\n")
+    if(quiet==F){cat(" Complete\n")}
   }
   
   ##Parameter cleanup##
@@ -98,7 +98,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   }
   
   ##Subset & Load Plotting Values##
-  cat("Filtering & loading coverage matrix...")
+  if(quiet==F){cat("Filtering & loading coverage matrix...")}
   if(normDist!="genome"){
     subcovmatrix <- tempfile()
     system(paste("head -n1 ",covmatrix," > ",subcovmatrix,sep=""))
@@ -108,7 +108,7 @@ CNView <- function(chr,start,end,            #region to be plotted
     subcovmatrix <- covmatrix
   }
   cov <- read.table(subcovmatrix,header=T,sep="\t")
-  cat(" Complete\n")
+  if(quiet==F){cat(" Complete\n")}
   
   ##Rebin Helper FX##
   rebin <- function(df,compression){
@@ -132,32 +132,32 @@ CNView <- function(chr,start,end,            #region to be plotted
   }
   
   ##Rebins values##
-  cat("Compressing coverage matrix [")
+  if(quiet==F){cat("Compressing coverage matrix [")}
   obinsize <- cov[1,3]-cov[1,2]
   if(compression=="optimize"){
     compression <- round((end-start+(2*window))/120000)
   }
   binsize <- compression*obinsize
-  cat(paste(prettyNum(binsize,big.mark=",")," bp bins]... ",sep=""))
+  if(quiet==F){cat(paste(prettyNum(binsize,big.mark=",")," bp bins]... ",sep=""))}
   if(compression>1){
     res <- rebin(cov,compression)    
   } else {
     res <- cov
   }
-  cat(" Complete\n")
+  if(quiet==F){cat(" Complete\n")}
   
   ##Scale each col within that sample by median##
-  cat("Performing intra-sample normalization...")
+  if(quiet==F){cat("Performing intra-sample normalization...")}
   res[,4:ncol(res)] <- apply(res[,4:ncol(res)],2,
                              function(vals){
                                nvals <- as.numeric(vals)/median(as.numeric(vals))
                                nvals[is.infinite(nvals)] <- NA
                                return(nvals)
                              })
-  cat(" Complete\n")
+  if(quiet==F){cat(" Complete\n")}
   
   ##Normalize each row across all samples##
-  cat("Performing inter-sample normalization...")
+  if(quiet==F){cat("Performing inter-sample normalization...")}
   colnames(res)[1:3] <- c("Chr","Start","End")
   names <- colnames(res)
   oncol <- ncol(res)
@@ -169,7 +169,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   res$sd <- apply(res[,4:oncol],1,sd)
   res$median <- apply(res[,4:oncol],1,median)
   res$mad <- apply(res[,4:oncol],1,mad)
-  cat(" Complete\n")
+  if(quiet==F){cat(" Complete\n")}
   
   ##Subset View Window##
   plotSet <- as.data.frame(apply(res[which(as.integer(as.character(res$Start)) <= end+window & 
@@ -186,10 +186,10 @@ CNView <- function(chr,start,end,            #region to be plotted
   ##Output Options##  
   if(plot==T){
     if(!(is.null(output))){
-      cat(paste("Plotting samples to ",output,"...",sep=""))
+      if(quiet==F){cat(paste("Plotting samples to ",output,"...",sep=""))}
       pdf(output,width=10.5,height=(5+(2.5*nsamp)))
     } else {
-      cat("Plotting samples to screen...")
+      if(quiet==F){cat("Plotting samples to screen...")}
     }
     par(mar=c(0,0,0,0),
         oma=c(5,4,4,2))
@@ -344,16 +344,16 @@ CNView <- function(chr,start,end,            #region to be plotted
         }
       }
     }
-    cat(" Complete\n")
+    if(quiet==F){cat(" Complete\n")}
     
     ##UCSC plot##
     if(!(is.null(UCSCtracks))){
-      cat("Appending UCSC tracks...")
+      if(quiet==F){cat("Appending UCSC tracks...")}
       plot(plotSet$Start,
            c(1,2,rep(3,nrow(plotSet)-2)),
            ylim=c(0,3),
            type="n",xaxt="n",yaxt="n",
-           ylab="",xlab="")
+           ylab="",xlab="",xaxs="i")
       axis(1,at=seq(min(plotSet$Start),
                     max(plotSet$Start),
                     by=(max(plotSet$Start)-min(plotSet$Start))/8),
@@ -427,7 +427,7 @@ CNView <- function(chr,start,end,            #region to be plotted
       axis(2,at=c(seq(0.5,length(UCSCtracks)-0.5)),
            labels=UCSCtracks,
            cex.axis=0.6,las=1,tick=F)
-      cat(" Complete\n")
+      if(quiet==F){cat(" Complete\n")}
     }
     
     ##Adds X axis##
@@ -455,8 +455,8 @@ CNView <- function(chr,start,end,            #region to be plotted
   
   ##Return Values as df if specified#
   if(returnData==T){
-    cat("Returning normalized values\n")
-    cat(paste("\n** FINISHED ON ",date()," **\n\n",sep=""))
+    if(quiet==F){cat("Returning normalized values\n")}
+    if(quiet==F){cat(paste("\n** FINISHED ON ",date()," **\n\n",sep=""))}
     return(plotSet)
   }
   
@@ -466,7 +466,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   }
   
   ##Finish up##
-  cat(paste("\n** FINISHED ON ",date()," **\n\n",sep=""))
+  if(quiet==F){cat(paste("\n** FINISHED ON ",date()," **\n\n",sep=""))}
 }
 
 ####################################################
@@ -504,6 +504,8 @@ option_list <- list(
   make_option(c("-t","--title"), type="character", default=NULL,
               help="custom title for plot [default %default]",
               metavar="character"),
+  make_option(c("-q","--quiet"), action="store_true", default=FALSE,
+              help="disable verbose output [default %default]"),
   make_option(c("-l", "--nolegend"), action="store_false", default=TRUE,
               help="disable legend on plot [default %default]")
 )
@@ -520,12 +522,15 @@ if(length(args$args) != 6) {
   stop("Incorrect number of required positional arguments")
 }
 
+#Prints startup message
+if(opts$quiet==F){cat("+-------------------+\n| CNView Visualizer |\n|     (c) 2016      |\n+-------------------+\n")}
+
 #Processes arguments & cleans options
 if(file.exists(args$args[4])==T){
-  cat(paste("Reading sample IDs from ",args$args[4],"\n",sep=""))
+  if(opts$quiet==F){cat(paste("Reading sample IDs from ",args$args[4],"\n",sep=""))}
   samps <- read.table(args$args[4])[,1]
 }else{
-  cat(paste("Sample ID file '",args$args[4],"' not found, assuming single sample ID provided\n",sep=""))
+  if(opts$quiet==F){cat(paste("Sample ID file '",args$args[4],"' not found, assuming single sample ID provided\n",sep=""))}
   samps <- args$args[4]
 }
 suppressWarnings(if(!(is.na(opts$highlight)) & !(is.null(opts$highlight))){
@@ -553,6 +558,9 @@ if(is.null(opts$window)){
 }
 
 #Runs CNView function
+if(opts$quiet==T){
+  sink("/dev/null")
+}
 CNView(chr=args$args[1],
        start=as.numeric(args$args[2]),
        end=as.numeric(args$args[3]),
@@ -568,4 +576,5 @@ CNView(chr=args$args[1],
        title=opts$title,
        output=args$args[6],
        plot=T,
-       returnData=F)
+       returnData=F,
+       quiet=opts$quiet)

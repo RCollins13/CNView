@@ -239,7 +239,7 @@ CNView <- function(chr,start,end,            #region to be plotted
            }else{
              ylim=yscale
            },
-           xlab="",xaxt="n",ylab="",xaxs="i",
+           xlab="",xaxt="n",ylab="",xaxs="i",yaxt="n",
            panel.first=c(abline(h=seq(round_any(par("usr")[3],2),
                                       round_any(par("usr")[4],2),by=2),
                                 col="gray80"),
@@ -280,7 +280,10 @@ CNView <- function(chr,start,end,            #region to be plotted
                                                 plotSet[seq(2,(nrow(plotSet))),sampIdx[k]]),
                                   lwd=3,
                                   col=colval)))
-      #Y Axis Label
+      #Y Axis
+      axis(2,at=seq(round_any(par("usr")[3],2),
+                    round_any(par("usr")[4],2),by=2),
+           las=2)
       mtext(paste("Norm. Depth t Score",sep=""),
             side=2,line=2,cex=0.7)
       #Print Sample ID if >1 sample
@@ -480,14 +483,14 @@ suppressWarnings(suppressPackageStartupMessages(library(optparse)))
 
 #list of Rscript options
 option_list <- list(
-  make_option(c("-c", "--compression"), type="character", default="optimize",
+  make_option(c("-c", "--compression"), type="integer", default=NULL,
               help="compression scalar for rebinning, if desired [default '%default']", 
-              metavar="character"),
+              metavar="integer"),
   make_option(c("-i","--highlight"), type="character", default=NA,
               help="tab-delimited list of coordinate pairs for intervals to highlight and color as third column; NULL disables highlighting [default %default]",
               metavar="character"),
-  make_option(c("-w","--window"), type="integer", default=0,
-              help="distance to append to both sides of input interval for viewing [default %default]",
+  make_option(c("-w","--window"), type="integer", default=NULL,
+              help="distance to append to both sides of input interval for viewing [default 60% of plot interval]",
               metavar="integer"),
   make_option(c("--ymin"), type="integer", default=NULL,
               help="minimum value for y axis [default %default]", 
@@ -517,7 +520,7 @@ if(length(args$args) != 6) {
   stop("Incorrect number of required positional arguments")
 }
 
-#Processes arguments & options
+#Processes arguments & cleans options
 if(file.exists(args$args[4])==T){
   cat(paste("Reading sample IDs from ",args$args[4],"\n",sep=""))
   samps <- read.table(args$args[4])[,1]
@@ -538,6 +541,16 @@ if(!(is.null(opts$ymin)) & !(is.null(opts$ymax))){
 }else{
   yscale="optimize"
 }
+if(is.null(opts$compression)){
+  compression <- "optimize"
+}else{
+  compression <- opts$compression
+}
+if(is.null(opts$window)){
+  window=round(0.6*(as.numeric(args$args[3])-as.numeric(args$args[2])),0)
+}else{
+  window=round(opts$window,0)
+}
 
 #Runs CNView function
 CNView(chr=args$args[1],
@@ -545,10 +558,10 @@ CNView(chr=args$args[1],
        end=as.numeric(args$args[3]),
        sampleID=as.vector(samps),
        covmatrix=args$args[5],
-       compression=opts$compression,
+       compression=compression,
        highlight=highopt,
        highlightcol=highcolopt,
-       window=opts$window,
+       window=window,
        yscale=yscale,
        normDist=opts$normDist,
        UCSCtracks=c("Gene","SegDup","Gap"),

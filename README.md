@@ -21,7 +21,6 @@ All code copyright (c) 2016 Ryan Collins and is distributed under terms of the M
 
 ##CNView.R  
 Performs joint normalization of binned coverage values across a batch of WGS libraries and facilitates visualization. Also interfaces with UCSC Genome Browser to underlay several annotation tracks.  
-
 ```
 Usage: ./CNView.R [options] chr start end samples.list covmatrix.bed outfile
 
@@ -57,7 +56,7 @@ Options:
     Show this help message and exit
 ``` 
 **Usage Notes:**  
-1.  Several base-level options not wrapped by Rscript (such as ```returnData``` or ```plot```). To access those features, import the R function directly and run from the R command prompt.  
+1. Several base-level options not wrapped by Rscript (such as ```returnData``` or ```plot```). To access those features, import the R function directly and run from the R command prompt.  
 ---  
 ##Example A 
 ####Canonical Deletion Plotted in a Single Sample

@@ -30,7 +30,7 @@ All content copyright (c) 2016 Ryan Collins and is distributed under terms of th
 ###CNView Summary  
 CNView is a low-profile visualization tool for read depth in batches of next-generation sequencing libraries and, more specifically, for visually inspecting sites of [copy-number variation (CNV)](https://en.wikipedia.org/wiki/Copy-number_variation).  
 
-The developers are open to working directly with researchers to tailor applciations of CNView for specific needs or to customize "publication-quality" plots. Contact us at [rcollins@chgr.mgh.harvard.edu](mailto:rcollins@chgr.mgh.harvard.edu) if you have any questions or requests.
+The developers are open to tailoring applciations of CNView for specific needs or to customize "publication-quality" plots. Contact us at [rcollins@chgr.mgh.harvard.edu](mailto:rcollins@chgr.mgh.harvard.edu) if you have any questions or requests.
 
 ###Accessing Reference Libraries  
 Like many depth-based CNV callers, CNView does not work on individual libraries. Instead, CNView jointly models multiple libraries simultaneously, normalizing both within and across libraries to reduce systematic coverage biases. Thus, while technically CNView will run successfully from just two libraries, generally CNVs become clearly resolvable with at least 20 total samples jointly modelled.  
@@ -38,7 +38,7 @@ Like many depth-based CNV callers, CNView does not work on individual libraries.
 If you do not have access to an appropriate cohort of normative reference samples, thousands of standard Illumina WGS libraries are available from the [1,000 Genomes Project](http://www.1000genomes.org/) and many hundreds of other, more esoteric library types are available through other public repositories like the [European Nucleotide Archive (ENA)](http://www.ebi.ac.uk/ena) or the [Sequence Read Archive (SRA)](http://www.ncbi.nlm.nih.gov/sra).  
 
 ###Citing CNView  
-At present, there is no citation specifically for CNView, although we hope to publish the method in the future. If you use CNView, please cite [Brand & Collins et al., 2015](http://www.ncbi.nlm.nih.gov/pubmed/26094575) until there is a dedicated CNView citation, as the CNView plots are briefly described in that paper but will be expounded upon in a future publication.  
+At present, there is no citation specifically for CNView, although we hope to publish the method in the future. If you use CNView, please cite [Brand & Collins et al., 2015](http://www.ncbi.nlm.nih.gov/pubmed/26094575) until there is a dedicated CNView citation.  
 
 ---  
 ##Code Documentation

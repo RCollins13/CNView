@@ -11,9 +11,9 @@ All code copyright (c) 2016 Ryan Collins and is distributed under terms of the M
 ---  
 ## Table of Contents  
 #### General Information  
-- [CNView Summary]()
-- [Accessing Reference Libraries]()  
-- [Citing CNView]()
+- [CNView Summary](https://github.com/RCollins13/CNView#cnview-summary)
+- [Accessing Reference Libraries](https://github.com/RCollins13/CNView#accessing-reference-libraries)  
+- [Citing CNView](https://github.com/RCollins13/CNView#citing-cnview)
 
 #### Script documentation  
 - [CNView.R](https://github.com/RCollins13/CNView#cnviewr)  
@@ -23,21 +23,21 @@ All code copyright (c) 2016 Ryan Collins and is distributed under terms of the M
 - [Example B: Multiple Samples on the Same x-Axis](https://github.com/RCollins13/CNView#example-b)  
 - [Example C: Multiple Highlighted Intervals](https://github.com/RCollins13/CNView#example-c)  
 - [Example D: Disabled UCSC Annotations](https://github.com/RCollins13/CNView#example-d)  
+
 ---  
-##CNView Summary  
+##General Information
+###CNView Summary  
 CNView is a low-profile visualization tool for read depth in batches of next-generation sequencing libraries and, more specifically, for visually inspecting sites of [copy-number variation (CNV)](https://en.wikipedia.org/wiki/Copy-number_variation).  
 
 Beta renditions of CNView plots have been featured in several prior publications ([Brand & Pillalamarri et al., 2014](http://www.ncbi.nlm.nih.gov/pubmed/25279985); [Brand & Collins et al., 2015](http://www.ncbi.nlm.nih.gov/pubmed/26094575)). The developers are happy to work with groups to generate customized or "publication-quality" plots, too: contact us at [rcollins@chgr.mgh.harvard.edu](mailto:rcollins@chgr.mgh.harvard.edu) to discuss options.
 
-##Accessing Reference Libraries  
+###Accessing Reference Libraries  
 Like many depth-based CNV callers, CNView does not work on individual libraries. Instead, CNView jointly models multiple libraries simultaneously, normalizing both within and across libraries to reduce systematic coverage biases. Thus, while technically CNView will run successfully from just two libraries, generally CNVs become clearly resolvable with at least 20 total samples jointly modelled.  
 
-If you do not have access to an appropriate cohort of normative reference samples, thousands of standard Illumina WGS libraries are available from the [1,000 Genomes Project](http://www.1000genomes.org/) and many hundreds of other, less standard library types are available through other public repositories like the [European Nucleotide Archive (ENA)](http://www.ebi.ac.uk/ena) or the [Sequence Read Archive (SRA)](http://www.ncbi.nlm.nih.gov/sra).  
+If you do not have access to an appropriate cohort of normative reference samples, thousands of standard Illumina WGS libraries are available from the [1,000 Genomes Project](http://www.1000genomes.org/) and many hundreds of other, more esoteric library types are available through other public repositories like the [European Nucleotide Archive (ENA)](http://www.ebi.ac.uk/ena) or the [Sequence Read Archive (SRA)](http://www.ncbi.nlm.nih.gov/sra).  
 
-##Citing CNView  
-At present, there is no methods publication specific to CNView, although we hope to publish the methods in the future. If you use CNView, please cite either [Brand & Pillalamarri et al., 2014](http://www.ncbi.nlm.nih.gov/pubmed/25279985) or [Brand & Collins et al., 2015](http://www.ncbi.nlm.nih.gov/pubmed/26094575) until there is an official CNView citation, as the CNView plots themselves are described in both.  
-
-We will update citation information if CNView methods are published in the future.
+###Citing CNView  
+At present, there is no citation specifically for CNView, although we hope to publish the method in the future. If you use CNView, please cite either [Brand & Pillalamarri et al., 2014](http://www.ncbi.nlm.nih.gov/pubmed/25279985) or [Brand & Collins et al., 2015](http://www.ncbi.nlm.nih.gov/pubmed/26094575) until there is a dedicated CNView citation, as the CNView plots themselves are described in both.  
 
 ---  
 

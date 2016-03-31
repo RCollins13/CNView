@@ -506,7 +506,7 @@ option_list <- list(
               help="tab-delimited list of coordinate pairs for intervals to highlight and color as third column; NULL disables highlighting [default %default]",
               metavar="character"),
   make_option(c("-w","--window"), type="integer", default=NULL,
-              help="distance to append to both sides of input interval for viewing [default 60% of plot interval]",
+              help="distance to append to both sides of input interval for viewing [default 61.8% of plot interval]",
               metavar="integer"),
   make_option(c("--ymin"), type="integer", default=NULL,
               help="minimum value for y axis [default %default]", 
@@ -570,7 +570,7 @@ if(is.null(opts$compression)){
   compression <- opts$compression
 }
 if(is.null(opts$window)){
-  window=round(0.6*(as.numeric(args$args[3])-as.numeric(args$args[2])),0)
+  window=round(0.618*(as.numeric(args$args[3])-as.numeric(args$args[2])),0)
 }else{
   window=round(opts$window,0)
 }

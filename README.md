@@ -55,6 +55,8 @@ Options:
   -h, --help
     Show this help message and exit
 ```  
+**Usage Notes:**  
+1. Several base-level options not wrapped by Rscript (such as ```returnData``` or ```plot```). To access those features, import the R function directly and run from the R command prompt.  
 ---  
 ##Example A 
 ####Canonical Deletion Plotted in a Single Sample

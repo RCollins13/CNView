@@ -182,7 +182,8 @@ Appending UCSC tracks... Complete
 ###Example C  
 **Multiple Highlighted Intervals**  
 CNView also allows for customization of the highlighted interval(s), which can be useful if you have multiple regions of interest being visualized in the same plot.  
-![Multiple Highlighted Intervals](/ExamplePlots/CNView.ExamplePlotC.jpg?raw=true "Multiple Highlighted Intervals")  
+![Multiple Highlighted Intervals](/ExamplePlots/CNView.ExamplePlotC.jpg?raw=true "Multiple Highlighted Intervals")    
+**Example code to generate the above plot:**  
 ```
 bash$ ./CNView.R 3 8820980 8860556 \
                  ~/sampleIDs_2.txt \
@@ -193,7 +194,7 @@ bash$ ./CNView.R 3 8820980 8860556 \
                  --ymin -3 \
                  --ymax 7  
 ```
-Here, we're visualizing a 39.6kb [paired-duplication inversion, a.k.a. "dupINVdup"](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4571023/figure/fig1/), wherein two duplications flank the ends of an underlying inversion.  The distal (left-most) duplication is very small (611bp; highlighted in orange), so is only marginally visible at our 1kb bin resoltuion, while the proximal (right-most) duplication is quite clear (36.9kb; highlighted in blue).  The custom highlighting is achieved by passing CNView the ```--highlight``` option with a corresponding three-column, tab-delimited file. Here, the contents of that file, ```~/highlights.txt```, were:  
+Here, we're visualizing a 39.6kb [paired-duplication inversion, a.k.a. "dupINVdup"](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4571023/figure/fig1/), wherein two duplications flank the ends of an underlying inversion.  The distal (left-most) duplication is very small (611bp; highlighted in orange), so is only marginally visible at our 1kb bin resolution, while the proximal (right-most) duplication is quite clear (36.9kb; highlighted in blue).  The custom highlighting is achieved by passing CNView the ```--highlight``` option with a corresponding three-column, tab-delimited file. Here, the contents of that file, ```~/highlights.txt```, were:  
 ```
 bash$ cat ~/highlights.txt 
 8820980	8821591	darkorange
@@ -229,11 +230,15 @@ Appending UCSC tracks... Complete
 ---  
 ##Example D  
 **Disabled UCSC Annotations**  
-![Disabled UCSC Annotations](/ExamplePlots/CNView.ExamplePlotD.jpg?raw=true "Disabled UCSC Annotations")  
+If you like to keep things low-profile or don't have an active internet conenction, you can disable the UCSC annotations with ```-u```/```-noUCSC``` and tell the verbose output to shut up with ```-q```/```-quiet```.  
+![Disabled UCSC Annotations](/ExamplePlots/CNView.ExamplePlotD.jpg?raw=true "Disabled UCSC Annotations")    
+**Example code to generate the above plot:**  
 ```
 bash$ ./CNView.R 2 178714141 178760307 SFARI_d12529p1 \
                  ~/cov_matrix.bed \
                  ./ExamplePlots/CNView.ExamplePlotD.pdf \
                  --title "Example Plot D: Disabled UCSC Annotations" \
-                 --noUCSC
-```
+                 --noUCSC \
+                 --quiet
+```  
+This example is an identical repeat of [example A](https://github.com/RCollins13/CNView#example-a), just slimmed down to save on UCSC connections and stdout spam.

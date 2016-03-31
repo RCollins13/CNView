@@ -405,22 +405,38 @@ CNView <- function(chr,start,end,            #region to be plotted
         }
       }
       if("Gene" %in% UCSCtracks){
-        genes <- unique(dbGetQuery(UCSC,paste("SELECT txStart, txEnd, name2, strand FROM refGene WHERE `chrom` = 'chr",chr,"' ",
+        genes <- unique(dbGetQuery(UCSC,paste("SELECT txStart, txEnd, name2, strand, exonStarts, exonEnds FROM refGene WHERE `chrom` = 'chr",chr,"' ",
                                               "AND `txStart` <= ",end+window," ",
                                               "AND `txEnd` >= ",start-window,sep="")))
         if(nrow(genes) > 0){
           for(i in 1:nrow(genes)){
             rect(xleft=genes$txStart[i],
-                 ybottom=grep("Gene",UCSCtracks)-.9,
+                 ybottom=grep("Gene",UCSCtracks)-.6,
                  xright=genes$txEnd[i],
                  ytop=grep("Gene",UCSCtracks)-.1,
                  border=NA,col="lightgreen")
+            segments(x0=genes$txStart[i],
+                     x1=genes$txEnd[i],
+                     y0=grep("Gene",UCSCtracks)-0.35,
+                     y1=grep("Gene",UCSCtracks)-0.35,
+                     col="darkgreen")
+          }
+          exons <- unique(data.frame("start"=as.character(unlist(sapply(genes$exonStarts,
+                                                                        function(string){return(strsplit(string,split=","))}))),
+                                     "end"=as.character(unlist(sapply(genes$exonEnds,
+                                                                      function(string){return(strsplit(string,split=","))})))))
+          for(i in 1:nrow(exons)){
+            rect(xleft=exons[i,1],
+                 xright=exons[i,2],
+                 ybottom=grep("Gene",UCSCtracks)-.55,
+                 ytop=grep("Gene",UCSCtracks)-.15,
+                 border=NA,col="darkgreen")
           }
           for(i in unique(genes$name2)){
             text(x=(max(c(min(genes[which(genes$name2==i),1]),par("usr")[1]))+min(c(max(genes[which(genes$name2==i),2]),par("usr")[2])))/2,
-                 y=grep("Gene",UCSCtracks)-.5,
+                 y=grep("Gene",UCSCtracks)-.8,
                  labels=i,
-                 cex=0.75,col="darkgreen",font=4)
+                 cex=0.75,font=4)
           }
         }
       }

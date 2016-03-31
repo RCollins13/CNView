@@ -193,10 +193,10 @@ bash$ ./CNView.R 3 8820980 8860556 \
                  --ymin -3 \
                  --ymax 7  
 ```
-Here, we're visualizing a 39.6kb [paired-duplication inversion, a.k.a. "dupINVdup"](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4571023/figure/fig1/), wherein two duplications flank the ends of an underlying inversion.  The distal (left-most) duplication is very small (611bp; highlighted in green), so is only marginally visible at our 1kb bin resoltuion, while the proximal (right-most) duplication is quite clear (36.9kb; highlighted in blue).  The custom highlighting is achieved by passing CNView the ```--highlight``` option with a corresponding three-column, tab-delimited file. Here, the contents of that file, ```~/highlights.txt```, were:  
+Here, we're visualizing a 39.6kb [paired-duplication inversion, a.k.a. "dupINVdup"](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4571023/figure/fig1/), wherein two duplications flank the ends of an underlying inversion.  The distal (left-most) duplication is very small (611bp; highlighted in orange), so is only marginally visible at our 1kb bin resoltuion, while the proximal (right-most) duplication is quite clear (36.9kb; highlighted in blue).  The custom highlighting is achieved by passing CNView the ```--highlight``` option with a corresponding three-column, tab-delimited file. Here, the contents of that file, ```~/highlights.txt```, were:  
 ```
 bash$ cat ~/highlights.txt 
-8820980	8821591	forestgreen
+8820980	8821591	darkorange
 8823650	8860556	blue
 ```  
 The first two columns correspond to the intervals to highlight, and the third column corresponds to the R color to shade the interval.  

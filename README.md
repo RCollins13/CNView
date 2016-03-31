@@ -102,19 +102,21 @@ CNView has been tested on libraries ranging from 1X to >300X coverage simultaneo
 
 ###Example A  
 **Canonical Deletion Plotted in a Single Sample**  
-The basic use-case for CNView is to visualize a known CNV locus.  This can be performed right out of the box by invoking CNView.R with all default parameters.  
+The basic use-case for CNView is to visualize a known CNV locus.  This can be performed right out of the box by invoking ```CNView.R``` with all default parameters.  
 ![Canonical Deletion Plotted in a Single Sample](/ExamplePlots/CNView.ExamplePlotA.jpg?raw=true "Canonical Deletion Plotted in a Single Sample")  
-**Code to generate the above plot:**
+**Example code to generate the above plot:**
 ```
 bash$ ./CNView.R 2 178714141 178760307 SFARI_d12529p1 \
                  ~/cov_matrix.bed \
                  ./ExamplePlots/CNView.ExamplePlotA.pdf \
                  --title "Example Plot A: Canonical Deletion, Single Sample"
 ```  
-Where:  
-- SFARI_d12529p1 is the ID of the sample being plotted, which has to match one of the names of the columns in the coverage matrix exactly.  
-- ~/cov_matrix.bed is the path to the input coverage matrix, like the [example](https://github.com/RCollins13/CNView#getting-started-1) provided above.  
-- ./ExamplePlots/CNView.ExamplePlotA.pdf is the path to the desired output file (always will be pdf).  
+This example is visualizing a 46kb deletion of two exons from *PDE11A*. The first three parameters were the coordinates of the deletion (the highlighted region), while the other parameters were as follows:  
+- ```SFARI_d12529p1``` is the ID of the sample being plotted, which has to match one of the names of the columns in the coverage matrix exactly.  
+- ```~/cov_matrix.bed``` is the path to the input coverage matrix, like the [example](https://github.com/RCollins13/CNView#getting-started-1) provided above.  
+- ```./ExamplePlots/CNView.ExamplePlotA.pdf``` is the path to the desired output file (always will be pdf).  
+- ```--title``` overrides the default title with the string in quotes.  
+
 Running the above code should generate the above plot as a pdf and will also print the following expected text to stdout, which can be silenced with ```-q```/```--quiet```:  
 ```
 +-------------------+
@@ -135,7 +137,9 @@ Appending UCSC tracks... Complete
 ---  
 ###Example B  
 **Multiple Samples on the Same x-Axis**  
+CNView can plot up to 300 samples stacked atop the same shared x-axis. This is accomplished by passing a text file with the IDs of all samples to be plotted in place of the sample ID.  
 ![Multiple Samples on the Same x-Axis](/ExamplePlots/CNView.ExamplePlotB.jpg?raw=true "Multiple Samples on the Same x-Axis")  
+**Example code to generate the above plot:**  
 ```
 bash$ ./CNView.R 19 47636953 47687179 \
                  ~/sampleIDs.txt
@@ -145,6 +149,28 @@ bash$ ./CNView.R 19 47636953 47687179 \
                  -w 50000 \
                  --ymin -6 \
                  --ymax 10 
+```
+In this example, we're visualizing a 51kb duplication of *SAE1* that occurred *de novo* in the child (top panel, sample SFARI_d13874p1) and is present in neither the father (middle panel, SFARI_d13874fa) nor the mother (bottom panel, SFARI_d13874mo). In this example, we're also using a few more options to illustrate how to control the plot parameters:  
+- ```~/sampleIDs.tx``` is the path to the text file containing all sample IDs to be plotted (max of 300 samples/plot, which is an R system default, although this can be overwritten if needed).  
+- ```-w 50000``` tells CNView to pad 50kb of additional space to the plotting window on both sides of the specified interval. By default, the plotting window will be padded with [61.8%](https://en.wikipedia.org/wiki/Golden_ratio) of the size of the interval.  
+- ```--ymim``` and ```--ymax``` override the default y axes, which is most useful when plotting multiple samples simultaneously to get a relative.  
+
+And here's the expected stdout text:  
+```
++-------------------+
+| CNView Visualizer |
+|     (c) 2016      |
++-------------------+
+Sample ID file 'SFARI_d12529p1' not found, assuming single sample ID provided
+Attempting to connect to UCSC Genome Browser... Complete
+Filtering & loading coverage matrix... Complete
+Compressing coverage matrix [1,000 bp bins]...  Complete
+Performing intra-sample normalization... Complete
+Performing inter-sample normalization... Complete
+Plotting samples to ./ExamplePlots/CNView.ExamplePlotA.pdf... Complete
+Appending UCSC tracks... Complete
+
+** FINISHED ON Thu Mar 31 14:12:43 2016 **
 ```
 ---  
 ###Example C  

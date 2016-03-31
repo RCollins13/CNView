@@ -20,7 +20,32 @@ All code copyright (c) 2016 Ryan Collins and is distributed under terms of the M
 Performs joint normalization of binned coverage values across a batch of WGS libraries and facilitates visualization. Also interfaces with UCSC Genome Browser to underlay several annotation tracks.  
 
 ```
-Example usage goes here
+CNView.R [options] chr start end samples.list covmatrix.bed outfile
+
+Options:
+	-c CHARACTER, --compression=CHARACTER
+		compression scalar for rebinning, if desired [default 'optimize']
+
+	-i CHARACTER, --highlight=CHARACTER
+		tab-delimited list of coordinate pairs for intervals to highlight and color as third column; NULL disables highlighting [default NA]
+
+	-w INTEGER, --window=INTEGER
+		distance to append to both sides of input interval for viewing [default 0]
+
+	--ymin=INTEGER
+		minimum value for y axis [default NULL]
+
+	--ymax=INTEGER
+		maximum value for y axis [default NULL]
+
+	-n INTEGER, --normDist=INTEGER
+		distance outside region to use for normalization (both sides) [default 5000000]
+
+	-l, --legend
+		add legend to plot [default TRUE]
+
+	-h, --help
+		Show this help message and exit
 ``` 
 **Usage Notes:**  
 1.  TBD

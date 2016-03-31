@@ -6,7 +6,7 @@ Visualization and annotation of CNVs from population-scale whole-genome sequenci
 All code copyright (c) 2016 Ryan Collins and is distributed under terms of the MIT license.  
 
 ---  
-![Canonical Deletion Plotted in a Single Sample](/ExamplePlots/CNView.ExamplePlotA.jpg?raw=true "Canonical Deletion Plotted in a Single Sample")  
+![CNView: Example CNV Visualization](/ExamplePlots/CNView.BannerExample.jpg?raw=true "CNView: Example CNV Visualization")  
 ---  
 ## Table of Contents  
 #### Script documentation  

@@ -33,9 +33,9 @@ CNView <- function(chr,start,end,            #region to be plotted
   if(compression!="optimize"){
     if(!(compression >= 1 & all.equal(compression,as.integer(compression)))){
       stop('INPUT ERROR: compression parameter must either be "optomize" or positive integer > 1')}}
-  if(!(is.na(highlight)) & !(is.null(highlight))){
+  suppressWarnings(if(!(is.na(highlight)) & !(is.null(highlight))){
     if(length(highlightcol)!=length(highlight)){
-      stop("INPUT ERROR: highlightcol must be same length as intervals to highlight")}}
+      stop("INPUT ERROR: highlightcol must be same length as intervals to highlight")}})
   if(normDist!="genome"){
     if(window>normDist | !(all.equal(window,as.integer(window)))){
       stop('INPUT ERROR: window must be a positive, whole number less than normDist')}
@@ -83,7 +83,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                       user='genome',
                       dbname='hg19',
                       host='genome-mysql.cse.ucsc.edu')
-    cat(" Success!\n")
+    cat(" Complete\n")
   }
   
   ##Parameter cleanup##
@@ -132,19 +132,19 @@ CNView <- function(chr,start,end,            #region to be plotted
   }
   
   ##Rebins values##
-  cat("Compressing coverage matrix... ")
+  cat("Compressing coverage matrix [")
   obinsize <- cov[1,3]-cov[1,2]
   if(compression=="optimize"){
     compression <- round((end-start+(2*window))/120000)
   }
   binsize <- compression*obinsize
-  cat(paste(prettyNum(binsize,big.mark=",")," bp bins... ",sep=""))
+  cat(paste(prettyNum(binsize,big.mark=",")," bp bins]... ",sep=""))
   if(compression>1){
     res <- rebin(cov,compression)    
   } else {
     res <- cov
   }
-  cat("Complete\n")
+  cat(" Complete\n")
   
   ##Scale each col within that sample by median##
   cat("Performing intra-sample normalization...")
@@ -154,7 +154,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                                nvals[is.infinite(nvals)] <- NA
                                return(nvals)
                              })
-  cat("Complete\n")
+  cat(" Complete\n")
   
   ##Normalize each row across all samples##
   cat("Performing inter-sample normalization...")
@@ -169,8 +169,8 @@ CNView <- function(chr,start,end,            #region to be plotted
   res$sd <- apply(res[,4:oncol],1,sd)
   res$median <- apply(res[,4:oncol],1,median)
   res$mad <- apply(res[,4:oncol],1,mad)
-  cat("Complete\n")
-    
+  cat(" Complete\n")
+  
   ##Subset View Window##
   plotSet <- as.data.frame(apply(res[which(as.integer(as.character(res$Start)) <= end+window & 
                                              as.integer(as.character(res$End)) >= start-window & 
@@ -186,10 +186,10 @@ CNView <- function(chr,start,end,            #region to be plotted
   ##Output Options##  
   if(plot==T){
     if(!(is.null(output))){
-      cat(paste("Plotting samples to ",output,"... \n",sep=""))
-      pdf(output,width=10.5,height=(4+(2.5*nsamp)))
+      cat(paste("Plotting samples to ",output,"...",sep=""))
+      pdf(output,width=10.5,height=(5+(2.5*nsamp)))
     } else {
-      cat("Plotting samples to screen... \n")
+      cat("Plotting samples to screen...")
     }
     par(mar=c(0,0,0,0),
         oma=c(5,4,4,2))
@@ -341,10 +341,11 @@ CNView <- function(chr,start,end,            #region to be plotted
         }
       }
     }
+    cat(" Complete\n")
     
     ##UCSC plot##
     if(!(is.null(UCSCtracks))){
-      cat("Appending UCSC tracks... ")
+      cat("Appending UCSC tracks...")
       plot(plotSet$Start,
            c(1,2,rep(3,nrow(plotSet)-2)),
            ylim=c(0,3),
@@ -423,7 +424,7 @@ CNView <- function(chr,start,end,            #region to be plotted
       axis(2,at=c(seq(0.5,length(UCSCtracks)-0.5)),
            labels=UCSCtracks,
            cex.axis=0.6,las=1,tick=F)
-      cat("Complete\n")
+      cat(" Complete\n")
     }
     
     ##Adds X axis##
@@ -443,8 +444,7 @@ CNView <- function(chr,start,end,            #region to be plotted
       dev.off()
     }
   }
-  cat("Complete\n")
-    
+  
   ##Disconnect from UCSC, if necessary##
   if(exists("UCSC")){
     dbDisconnect(UCSC)
@@ -498,8 +498,11 @@ option_list <- list(
   make_option(c("-n","--normDist"), type="integer", default=5000000,
               help="distance outside region to use for normalization (both sides) [default %default]",
               metavar="integer"),
-  make_option(c("-l", "--legend"), action="store_true", default=TRUE,
-              help="add legend to plot [default %default]")
+  make_option(c("-t","--title"), type="character", default=NULL,
+              help="custom title for plot [default %default]",
+              metavar="character"),
+  make_option(c("-l", "--nolegend"), action="store_false", default=TRUE,
+              help="disable legend on plot [default %default]")
 )
 
 #Get command-line arguments & options
@@ -516,33 +519,40 @@ if(length(args$args) != 6) {
 
 #Processes arguments & options
 if(file.exists(args$args[4])==T){
-  cat(paste("Reading sample IDs from ",args$args[4],"...\n",sep=""))
+  cat(paste("Reading sample IDs from ",args$args[4],"\n",sep=""))
   samps <- read.table(args$args[4])[,1]
 }else{
-  cat(paste("Sample ID file '",args$args[4],"' not found, assuming single sample ID provided...\n",sep=""))
+  cat(paste("Sample ID file '",args$args[4],"' not found, assuming single sample ID provided\n",sep=""))
   samps <- args$args[4]
 }
-if(!(is.na(opts$highlight)) & !(is.null(opts$highlight))){
+suppressWarnings(if(!(is.na(opts$highlight)) & !(is.null(opts$highlight))){
   hightable <- read.table(opts$highlight,sep="\t",header=F)[,1:3]
-  highopt <- apply(hightable,1,function(row){return(c(as.numeric(row[1]),as.numeric(row[2])))})
-  lapply(list(hightable[,1],hightable[,2]))
+  highopt <- as.list(as.data.frame(t(hightable[,1:2])))
+  highcolopt <- as.vector(hightable[,3])
 }else{
   highopt <- opts$highlight
   highcolopt <- "gold"
+})
+if(!(is.null(opts$ymin)) & !(is.null(opts$ymax))){
+  yscale=c(opts$ymin,opts$ymax)
+}else{
+  yscale="optimize"
 }
-print(hightable)
-
-print(opts)
 
 #Runs CNView function
-# CNView(chr=args$args[1],
-#        start=as.numeric(args$args[2]),
-#        end=as.numeric(args$args[3]),
-#        sampleID=as.vector(samps),
-#        covmatrix=args$args[5],
-#        compression=opts$compression,
-#        
-#        output=args$args[6])
-
-
-
+CNView(chr=args$args[1],
+       start=as.numeric(args$args[2]),
+       end=as.numeric(args$args[3]),
+       sampleID=as.vector(samps),
+       covmatrix=args$args[5],
+       compression=opts$compression,
+       highlight=highopt,
+       highlightcol=highcolopt,
+       window=opts$window,
+       yscale=yscale,
+       normDist=opts$normDist,
+       UCSCtracks=c("Gene","SegDup","Gap"),
+       title=opts$title,
+       output=args$args[6],
+       plot=T,
+       returnData=F)

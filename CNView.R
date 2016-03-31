@@ -1,8 +1,11 @@
-# Copyright (c) 2016 Ryan Collins <rcollins@chgr.mgh.harvard.edu>
-# Distributed under terms of the MIT license.
+#! /usr/bin/env Rscript
 
 #CNView: Code to plot normalized coverage for CNV visualization from WGS data
 
+# Copyright (c) 2016 Ryan Collins <rcollins@chgr.mgh.harvard.edu>
+# Distributed under terms of the MIT license.
+
+#Main plotting function, called later by Rscript (see bottom of script)
 CNView <- function(chr,start,end,            #region to be plotted
                    sampleID,                 #Character vector of IDs of samples to plot
                    covmatrix,                #Absolute path of coverage matrix. Header with sample IDs required
@@ -11,7 +14,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                    highlightcol="gold",      #vector of colors to shade each highlighted interval
                    window=0,                 #distance to append to both sides of input interval for viewing
                    yscale="optimize",        #vector of values to be represented on y axis
-                   normDist=30000000,        #distance outside region to normalize (both sides). Must either be int or "genome"
+                   normDist=5000000,        #distance outside region to normalize (both sides). Must either be int or "genome"
                    UCSCtracks=c("Gene",      #append UCSC sequence context information; choose either NULL
                                 "SegDup",    #or up to three among "Gene", "Gap", "RepMask", "blacklist", and "SegDup"
                                 "Gap"),
@@ -41,6 +44,9 @@ CNView <- function(chr,start,end,            #region to be plotted
     stop('INPUT ERROR: UCSCtracks must be a vector of no more than three track names (see documentation for options)')}
   if(plot==F && !(is.null(output))){
     stop('INPUT ERROR: plot must be TRUE for output other than NULL')}
+  if(file.exists(covmatrix)==F){
+    stop('INPUT ERROR: coverage matrix file not found')
+  }
   
   ##Set preferences##
   options(scipen=1000, #disables scientific notation
@@ -144,7 +150,9 @@ CNView <- function(chr,start,end,            #region to be plotted
   cat("Performing intra-sample normalization...")
   res[,4:ncol(res)] <- apply(res[,4:ncol(res)],2,
                              function(vals){
-                               return(as.numeric(vals)/median(as.numeric(vals)))
+                               nvals <- as.numeric(vals)/median(as.numeric(vals))
+                               nvals[is.infinite(nvals)] <- NA
+                               return(nvals)
                              })
   cat("Complete\n")
   
@@ -153,13 +161,16 @@ CNView <- function(chr,start,end,            #region to be plotted
   colnames(res)[1:3] <- c("Chr","Start","End")
   names <- colnames(res)
   oncol <- ncol(res)
-  res[,4:oncol] <- data.frame(t(apply(res[,4:oncol],1,scale)))
+  res[,4:oncol] <- data.frame(t(apply(res[,4:oncol],1,function(vals){
+    return(scale(as.numeric(vals)))
+  })))
+  res[is.na(res)] <- 0
   res$mean <- apply(res[,4:oncol],1,mean)
   res$sd <- apply(res[,4:oncol],1,sd)
   res$median <- apply(res[,4:oncol],1,median)
   res$mad <- apply(res[,4:oncol],1,mad)
   cat("Complete\n")
-  
+    
   ##Subset View Window##
   plotSet <- as.data.frame(apply(res[which(as.integer(as.character(res$Start)) <= end+window & 
                                              as.integer(as.character(res$End)) >= start-window & 
@@ -172,7 +183,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   ##Get Sample Indexes##
   sampIdx <- as.vector(sapply(as.vector(sampleID),function(val){grep(val,colnames(plotSet),ignore.case=T)}))
   
-  ##Output Options##
+  ##Output Options##  
   if(plot==T){
     if(!(is.null(output))){
       cat(paste("Plotting samples to ",output,"... \n",sep=""))
@@ -402,7 +413,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                  border=NA,col="lightgreen")
           }
           for(i in unique(genes$name2)){
-            text(x=(min(genes[which(genes$name2==i),1])+max(genes[which(genes$name2==i),2]))/2,
+            text(x=(max(c(min(genes[which(genes$name2==i),1]),par("usr")[1]))+min(c(max(genes[which(genes$name2==i),2]),par("usr")[2])))/2,
                  y=grep("Gene",UCSCtracks)-.5,
                  labels=i,
                  cex=0.75,col="darkgreen",font=4)
@@ -433,7 +444,7 @@ CNView <- function(chr,start,end,            #region to be plotted
     }
   }
   cat("Complete\n")
-  
+    
   ##Disconnect from UCSC, if necessary##
   if(exists("UCSC")){
     dbDisconnect(UCSC)
@@ -454,3 +465,84 @@ CNView <- function(chr,start,end,            #region to be plotted
   ##Finish up##
   cat(paste("\n** FINISHED ON ",date()," **\n\n",sep=""))
 }
+
+####################################################
+####Rscript functionality for command line usage####
+####################################################
+
+#Disables factor default
+options(stringsAsFactors=F)
+
+#installs optparse if not already installed
+if("optparse" %in% rownames(installed.packages()) == FALSE)
+{install.packages("optparse",repos="http://cran.rstudio.com")}
+suppressWarnings(suppressPackageStartupMessages(library(optparse)))
+
+#list of Rscript options
+option_list <- list(
+  make_option(c("-c", "--compression"), type="character", default="optimize",
+              help="compression scalar for rebinning, if desired [default '%default']", 
+              metavar="character"),
+  make_option(c("-i","--highlight"), type="character", default=NA,
+              help="tab-delimited list of coordinate pairs for intervals to highlight and color as third column; NULL disables highlighting [default %default]",
+              metavar="character"),
+  make_option(c("-w","--window"), type="integer", default=0,
+              help="distance to append to both sides of input interval for viewing [default %default]",
+              metavar="integer"),
+  make_option(c("--ymin"), type="integer", default=NULL,
+              help="minimum value for y axis [default %default]", 
+              metavar="integer"),
+  make_option(c("--ymax"), type="integer", default=NULL,
+              help="maximum value for y axis [default %default]", 
+              metavar="integer"),
+  make_option(c("-n","--normDist"), type="integer", default=5000000,
+              help="distance outside region to use for normalization (both sides) [default %default]",
+              metavar="integer"),
+  make_option(c("-l", "--legend"), action="store_true", default=TRUE,
+              help="add legend to plot [default %default]")
+)
+
+#Get command-line arguments & options
+parser <- OptionParser(usage="%prog [options] chr start end samples.list covmatrix.bed outfile",
+                       option_list=option_list,add_help_option=T)
+args <- parse_args(parser,positional_arguments=TRUE)
+opts <- args$options
+
+#checks for appropriate positional arguments
+if(length(args$args) != 6) {
+  print_help(parser)
+  stop("Incorrect number of required positional arguments")
+}
+
+#Processes arguments & options
+if(file.exists(args$args[4])==T){
+  cat(paste("Reading sample IDs from ",args$args[4],"...\n",sep=""))
+  samps <- read.table(args$args[4])[,1]
+}else{
+  cat(paste("Sample ID file '",args$args[4],"' not found, assuming single sample ID provided...\n",sep=""))
+  samps <- args$args[4]
+}
+if(!(is.na(opts$highlight)) & !(is.null(opts$highlight))){
+  hightable <- read.table(opts$highlight,sep="\t",header=F)[,1:3]
+  highopt <- apply(hightable,1,function(row){return(c(as.numeric(row[1]),as.numeric(row[2])))})
+  lapply(list(hightable[,1],hightable[,2]))
+}else{
+  highopt <- opts$highlight
+  highcolopt <- "gold"
+}
+print(hightable)
+
+print(opts)
+
+#Runs CNView function
+# CNView(chr=args$args[1],
+#        start=as.numeric(args$args[2]),
+#        end=as.numeric(args$args[3]),
+#        sampleID=as.vector(samps),
+#        covmatrix=args$args[5],
+#        compression=opts$compression,
+#        
+#        output=args$args[6])
+
+
+

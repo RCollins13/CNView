@@ -94,7 +94,7 @@ Chr  Start     End       SampleA  SampleB  SampleC  ...  SampleZ
 1    100       200       98       60       230      ...  132
 1    200       300       102      59       202      ...  142
 ...  ...       ...       ...      ...      ...      ...  ...
-Y    59373400  59373500
+Y    59373400  59373500  93       68       198      ...  129
 ```  
 
 CNView has been tested on libraries ranging from 1X to >300X coverage simultaneously and appears to perform relatively consistently irrespective of the ranges of coverage between individual libraries in the same batch.  
@@ -102,13 +102,35 @@ CNView has been tested on libraries ranging from 1X to >300X coverage simultaneo
 
 ###Example A  
 **Canonical Deletion Plotted in a Single Sample**  
-The basic use-case for CNView is to visualize a known CNV locus.  
+The basic use-case for CNView is to visualize a known CNV locus.  This can be performed right out of the box by invoking CNView.R with all default parameters.  
 ![Canonical Deletion Plotted in a Single Sample](/ExamplePlots/CNView.ExamplePlotA.jpg?raw=true "Canonical Deletion Plotted in a Single Sample")  
+**Code to generate the above plot:**
 ```
 bash$ ./CNView.R 2 178714141 178760307 SFARI_d12529p1 \
                  ~/cov_matrix.bed \
                  ./ExamplePlots/CNView.ExamplePlotA.pdf \
                  --title "Example Plot A: Canonical Deletion, Single Sample"
+```  
+Where:  
+- SFARI_d12529p1 is the ID of the sample being plotted, which has to match one of the names of the columns in the coverage matrix exactly.  
+- ~/cov_matrix.bed is the path to the input coverage matrix, like the [example](https://github.com/RCollins13/CNView#getting-started-1) provided above.  
+- ./ExamplePlots/CNView.ExamplePlotA.pdf is the path to the desired output file (always will be pdf).  
+Running the above code should generate the above plot as a pdf and will also print the following expected text to stdout, which can be silenced with ```-q```/```--quiet```:  
+```
++-------------------+
+| CNView Visualizer |
+|     (c) 2016      |
++-------------------+
+Sample ID file 'SFARI_d12529p1' not found, assuming single sample ID provided
+Attempting to connect to UCSC Genome Browser... Complete
+Filtering & loading coverage matrix... Complete
+Compressing coverage matrix [1,000 bp bins]...  Complete
+Performing intra-sample normalization... Complete
+Performing inter-sample normalization... Complete
+Plotting samples to ./ExamplePlots/CNView.ExamplePlotA.pdf... Complete
+Appending UCSC tracks... Complete
+
+** FINISHED ON Thu Mar 31 14:12:43 2016 **
 ```
 ---  
 ###Example B  

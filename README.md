@@ -207,6 +207,24 @@ bash$ cat ~/sampleIDs_2.txt
 SFARI_d14637p1
 SFARI_d14637fa
 SFARI_d14637mo
+```  
+
+The output to stdout for this call should be:  
+```
++-------------------+
+| CNView Visualizer |
+|     (c) 2016      |
++-------------------+
+Reading sample IDs from /Users/collins/sampleIDs_2.txt
+Attempting to connect to UCSC Genome Browser... Complete
+Filtering & loading coverage matrix... Complete
+Compressing coverage matrix [10,000 bp bins]...  Complete
+Performing intra-sample normalization... Complete
+Performing inter-sample normalization... Complete
+Plotting samples to ./ExamplePlots/CNView.ExamplePlotC.pdf... Complete
+Appending UCSC tracks... Complete
+
+** FINISHED ON Thu Mar 31 14:13:22 2016 **
 ```
 ---  
 ##Example D  

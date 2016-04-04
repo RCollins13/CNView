@@ -127,7 +127,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   if(compression=="optimize"){
     compression <- round(((end-start)/120)/obinsize,0)
   }
-  if(obinsize<1){
+  if(compression<1){
     compression <- 1
   }
   binsize <- compression*obinsize

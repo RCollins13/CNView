@@ -135,7 +135,10 @@ CNView <- function(chr,start,end,            #region to be plotted
   if(quiet==F){cat("Compressing coverage matrix [")}
   obinsize <- cov[1,3]-cov[1,2]
   if(compression=="optimize"){
-    compression <- round((end-start+(2*window))/120000)
+    compression <- round(((end-start)/120)/obinsize,0)
+  }
+  if(obinsize<1){
+    compression <- 1
   }
   binsize <- compression*obinsize
   if(quiet==F){cat(paste(prettyNum(binsize,big.mark=",")," bp bins]... ",sep=""))}

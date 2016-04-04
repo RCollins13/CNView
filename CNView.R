@@ -76,16 +76,6 @@ CNView <- function(chr,start,end,            #region to be plotted
    install.packages("MASS",repos="http://cran.rstudio.com")}
   suppressPackageStartupMessages(library(MASS))
   
-  ##Connects to UCSC, if necessary##
-  if(!(is.null(UCSCtracks))){
-    if(quiet==F){cat("Attempting to connect to UCSC Genome Browser...")}
-    UCSC <- dbConnect(MySQL(),
-                      user='genome',
-                      dbname='hg19',
-                      host='genome-mysql.cse.ucsc.edu')
-    if(quiet==F){cat(" Complete\n")}
-  }
-  
   ##Parameter cleanup##
   if(!(is.null(highlight))){
     if(is.na(highlight)){
@@ -351,6 +341,14 @@ CNView <- function(chr,start,end,            #region to be plotted
     
     ##UCSC plot##
     if(!(is.null(UCSCtracks))){
+      ##Connects to UCSC##
+      if(quiet==F){cat("Attempting to connect to UCSC Genome Browser...")}
+      UCSC <- dbConnect(MySQL(),
+                        user='genome',
+                        dbname='hg19',
+                        host='genome-mysql.cse.ucsc.edu')
+      if(quiet==F){cat(" Complete\n")}
+
       if(quiet==F){cat("Appending UCSC tracks...")}
       plot(plotSet$Start,
            c(1,2,rep(3,nrow(plotSet)-2)),

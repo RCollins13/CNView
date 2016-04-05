@@ -291,7 +291,7 @@ CNView <- function(chr,start,end,            #region to be plotted
             pDUP <- paste(round(as.numeric(strsplit(format(pDUP,scientific=T),split="e")[[1]][1]),3),
                           "E",strsplit(format(pDUP,scientific=T),split="e")[[1]][2],sep="")
             text(x=mean(highlight[[i]]),y=par("usr")[3],pos=3,cex=1.5,
-                 labels=paste("p(Dup) = ",pDEL,"\np(Del) = ",pDUP,sep=""))
+                 labels=paste("p(Del) = ",pDEL,"\np(Dup) = ",pDUP,sep=""))
           }
         }
       }
@@ -325,6 +325,11 @@ CNView <- function(chr,start,end,            #region to be plotted
               outer=T,side=3,line=0)
         #Legend
         if(legend==T){
+          if(nsamp==1){
+            lcex=0.8
+          }else{
+            lcex=1.3
+          }
           if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){
             legend("topright",
                    legend=c(paste("p(Dup) < Bonferroni (df=",ncol(plotSet)-8,")",sep=""),
@@ -335,7 +340,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                    pch=c(NA,NA,NA,15,15),pt.cex=c(1,1,1,1.5,1.5),
                    lty=c(1,1,2,NA,NA),lwd=c(4,4,1,NA,NA),
                    col=c("blue","red","black","gray54","lightgray"),
-                   bg="white",cex=1.3)
+                   bg="white",cex=lcex)
             text(x=par("usr")[1],
                  y=0.95*par("usr")[4],
                  labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
@@ -350,7 +355,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                    pch=c(NA,NA,NA,15,15),pt.cex=c(1,1,1,1.5,1.5),
                    lty=c(1,1,2,NA,NA),lwd=c(4,4,1,NA,NA),
                    col=c("blue","red","black","gray54","lightgray"),
-                   bg="white",cex=1.3)
+                   bg="white",cex=lcex)
             text(x=par("usr")[1],
                  y=0.95*par("usr")[3],
                  labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),

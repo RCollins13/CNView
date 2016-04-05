@@ -14,10 +14,11 @@ CNView <- function(chr,start,end,            #region to be plotted
                    highlightcol="gold",      #vector of colors to shade each highlighted interval
                    window=0,                 #distance to append to both sides of input interval for viewing
                    yscale="optimize",        #vector of values to be represented on y axis
-                   normDist=5000000,        #distance outside region to normalize (both sides). Must either be int or "genome"
+                   normDist=5000000,         #distance outside region to normalize (both sides). Must either be int or "genome"
                    UCSCtracks=c("Gene",      #append UCSC sequence context information; choose either NULL
                                 "SegDup",    #or up to three among "Gene", "Gap", "RepMask", "blacklist", and "SegDup"
                                 "Gap"),
+                   probs=FALSE,               #option to add CNV probabilities below each highlighted interval
                    title=NULL,               #option to add custom title. Overrides default
                    legend=T,                 #logical option to plot legend
                    output=NULL,              #path to output as pdf. If NULL, will plot to active device
@@ -273,6 +274,27 @@ CNView <- function(chr,start,end,            #region to be plotted
                                                 plotSet[seq(2,(nrow(plotSet))),sampIdx[k]]),
                                   lwd=3,
                                   col=colval)))
+      #Add probabilites, if optioned
+      if(probs==T){
+        if(!(is.null(highlight))){
+          for(i in 1:length(highlight)){
+            pDEL <- pt(mean(plotSet[which(plotSet$Start>=highlight[[i]][1] & 
+                                            plotSet$Start<=highlight[[i]][2]),
+                                    sampIdx]),
+                            df=ncol(plotSet)-7,lower.tail=T)
+            pDEL <- paste(round(as.numeric(strsplit(format(pDEL,scientific=T),split="e")[[1]][1]),3),
+                          "E",strsplit(format(pDEL,scientific=T),split="e")[[1]][2],sep="")
+            pDUP <- pt(mean(plotSet[which(plotSet$Start>=highlight[[i]][1] & 
+                                            plotSet$Start<=highlight[[i]][2]),
+                                    sampIdx]),
+                       df=ncol(plotSet)-7,lower.tail=F)
+            pDUP <- paste(round(as.numeric(strsplit(format(pDUP,scientific=T),split="e")[[1]][1]),3),
+                          "E",strsplit(format(pDUP,scientific=T),split="e")[[1]][2],sep="")
+            text(x=mean(highlight[[i]]),y=par("usr")[3],pos=3,cex=1.5
+                 labels=paste("p(DEL) = ",pDEL,"\np(DUP) = ",pDUP,sep=""))
+          }
+        }
+      }
       #Y Axis
       axis(2,at=seq(round_any(par("usr")[3],2),
                     round_any(par("usr")[4],2),by=2),
@@ -521,6 +543,8 @@ option_list <- list(
   make_option(c("-t","--title"), type="character", default=NULL,
               help="custom title for plot [default %default]",
               metavar="character"),
+  make_option(c("-p","--probs"), action="store_true", default=FALSE,
+              help="add CNV probabilities below each higlighted interval [default %default]"),
   make_option(c("-u","--noUCSC"), action="store_true", default=FALSE,
               help="disable UCSC track plotting [default %default]"),
   make_option(c("-q","--quiet"), action="store_true", default=FALSE,
@@ -597,6 +621,7 @@ CNView(chr=args$args[1],
        yscale=yscale,
        normDist=opts$normDist,
        UCSCtracks=UCSCtracks,
+       probs=opts$probs,
        title=opts$title,
        output=args$args[6],
        plot=T,

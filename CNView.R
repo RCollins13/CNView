@@ -290,7 +290,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                        df=ncol(plotSet)-7,lower.tail=F)
             pDUP <- paste(round(as.numeric(strsplit(format(pDUP,scientific=T),split="e")[[1]][1]),3),
                           "E",strsplit(format(pDUP,scientific=T),split="e")[[1]][2],sep="")
-            text(x=mean(highlight[[i]]),y=par("usr")[3],pos=3,cex=1.5,
+            text(x=mean(highlight[[i]]),y=par("usr")[3],pos=3,cex=1.3,
                  labels=paste("p(Del) = ",pDEL,"\np(Dup) = ",pDUP,sep=""))
           }
         }

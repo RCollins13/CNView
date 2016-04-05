@@ -1,5 +1,5 @@
 # CNView
-Visualization and annotation of CNVs from population-scale whole-genome sequencing data.
+Visualization, quantitation, and annotation of CNVs from population-scale whole-genome sequencing data.
 
 **Contact:** Ryan Collins (rcollins@chgr.mgh.harvard.edu)
 
@@ -28,7 +28,7 @@ All content copyright (c) 2016 Ryan Collins and is distributed under terms of th
 ---  
 ##General Information
 ###CNView Summary  
-CNView is a low-profile visualization tool for read depth in batches of next-generation sequencing libraries and, more specifically, for visually inspecting sites of [copy-number variation (CNV)](https://en.wikipedia.org/wiki/Copy-number_variation).  
+CNView is a low-profile visualization tool for read depth in batches of next-generation sequencing libraries and, more specifically, for visually inspecting sites of [copy-number variation (CNV)](https://en.wikipedia.org/wiki/Copy-number_variation).  It also implements a framework for estimating CNV probabilities and annotating CNV intervals.  
 
 The developers are open to tailoring applciations of CNView for specific needs or to customize "publication-quality" plots. Contact us at [rcollins@chgr.mgh.harvard.edu](mailto:rcollins@chgr.mgh.harvard.edu) if you have any questions or requests.
 
@@ -158,7 +158,8 @@ bash$ ./CNView.R 19 47636953 47687179 \
                  --title "Example Plot B: Multiple Samples on the Same x-Axis" \
                  -w 50000 \
                  --ymin -6 \
-                 --ymax 10 
+                 --ymax 10 \
+                 --probs
 ```
 In this example, we're visualizing a 51kb duplication of *SAE1* that occurred *de novo* in the child (top panel, sample SFARI_d13874p1) and is present in neither the father (middle panel, SFARI_d13874fa) nor the mother (bottom panel, SFARI_d13874mo). We're also using a few more options to illustrate how to control the plot parameters:  
 - ```~/sampleIDs.tx``` is the path to the text file containing all sample IDs to be plotted (max of 300 samples/plot, which is an R system default, although this can be overwritten if needed).  The contents of the file for this plot were:  
@@ -202,7 +203,8 @@ bash$ ./CNView.R 3 8820980 8860556 \
                  --highlight ~/highlights.txt \
                  --title "Example Plot C: Multiple Highlighted Intervals" \
                  --ymin -3 \
-                 --ymax 7  
+                 --ymax 7  \
+                 --probs  
 ```
 Here, we're visualizing a 39.6kb [paired-duplication inversion, a.k.a. "dupINVdup"](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4571023/figure/fig1/), wherein two duplications flank the ends of an underlying inversion.  The distal (left-most) duplication is very small (611bp; highlighted in orange), so is only marginally visible at our 1kb bin resolution, while the proximal (right-most) duplication is quite clear (36.9kb; highlighted in blue).  The custom highlighting is achieved by passing CNView the ```--highlight``` option with a corresponding three-column, tab-delimited file. Here, the contents of that file, ```~/highlights.txt```, were:  
 ```
@@ -210,7 +212,9 @@ bash$ cat ~/highlights.txt
 8820980	8821591	darkorange
 8823650	8860556	blue
 ```  
-The first two columns correspond to the intervals to highlight, and the third column corresponds to the R color to shade the interval.  
+The first two columns correspond to the intervals to highlight, and the third column corresponds to the R color to shade the interval. Also that, if ```-p```/```--probs``` is specified in conjunction with ```-h```/```--highlight```, separate probabilites are computed for each interval in the highlight parameters file.  
+
+
 
 Also, like before we've plotted a full family trio (child/father/mother), but unlike [Example B](https://github.com/RCollins13/CNView#example-b) this variant is evidently inherited from the mother (child is top panel and mother is bottom).  The contents of the sample file, ```~/sampleIDs_2.txt```, were:  
 ```

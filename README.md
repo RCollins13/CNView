@@ -117,13 +117,15 @@ The basic use-case for CNView is to visualize a predefined CNV locus, which can 
 bash$ ./CNView.R 2 178714141 178760307 SFARI_d12529p1 \
                  ~/cov_matrix.bed \
                  ./ExamplePlots/CNView.ExamplePlotA.pdf \
-                 --title "Example Plot A: Canonical Deletion, Single Sample"
+                 --title "Example Plot A: Canonical Deletion, Single Sample \
+                 --probs"
 ```  
 This example is visualizing a 46kb deletion of two exons from *PDE11A*. The first three positional arguments were the coordinates of the deletion (the highlighted region), while the other positional arguments were as follows:  
 - ```SFARI_d12529p1``` is the ID of the sample being plotted, which has to exactly match one of the names of the columns in the coverage matrix.  
 - ```~/cov_matrix.bed``` is the path to the input coverage matrix, like the [example](https://github.com/RCollins13/CNView#getting-started-1) provided above.  
 - ```./ExamplePlots/CNView.ExamplePlotA.pdf``` is the path to the desired output file (always will be pdf).  
 - ```--title``` overrides the default title with the subsequently supplied string in quotes.  
+- ```--probs``` prints the average probability of the highlighted window being deleted or duplicated. The p-value is calculated from the average t-score for each bin across the highlighted window.  
 
 Running the above code will also print some runtime diagnostics to stdout, which can alternatively be silenced with ```-q```/```--quiet```:  
 ```

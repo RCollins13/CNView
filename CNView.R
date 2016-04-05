@@ -278,13 +278,13 @@ CNView <- function(chr,start,end,            #region to be plotted
       if(probs==T){
         if(!(is.null(highlight))){
           for(i in 1:length(highlight)){
-            pDEL <- pt(mean(plotSet[which(plotSet$Start>=highlight[[i]][1] & 
+            pDEL <- pt(mean(plotSet[which(plotSet$End>=highlight[[i]][1] & 
                                             plotSet$Start<=highlight[[i]][2]),
                                     sampIdx]),
                             df=ncol(plotSet)-7,lower.tail=T)
             pDEL <- paste(round(as.numeric(strsplit(format(pDEL,scientific=T),split="e")[[1]][1]),3),
                           "E",strsplit(format(pDEL,scientific=T),split="e")[[1]][2],sep="")
-            pDUP <- pt(mean(plotSet[which(plotSet$Start>=highlight[[i]][1] & 
+            pDUP <- pt(mean(plotSet[which(plotSet$End>=highlight[[i]][1] & 
                                             plotSet$Start<=highlight[[i]][2]),
                                     sampIdx]),
                        df=ncol(plotSet)-7,lower.tail=F)

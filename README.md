@@ -48,35 +48,41 @@ Performs joint normalization of binned coverage values across a batch of WGS lib
 Usage: ./CNView.R [options] chr start end samples.list covmatrix.bed outfile
 
 Options:
-  -c INTEGER, --compression=INTEGER
-    compression scalar for rebinning, if desired [default 'NULL']
+	-c INTEGER, --compression=INTEGER
+		compression scalar for rebinning, if desired [default 'NULL']
 
-  -i CHARACTER, --highlight=CHARACTER
-    tab-delimited list of coordinate pairs for intervals to highlight and color as third column; NULL disables highlighting [default NA]
+	-i CHARACTER, --highlight=CHARACTER
+		tab-delimited list of coordinate pairs for intervals to highlight and color as third column; NULL disables highlighting [default NA]
 
-  -w INTEGER, --window=INTEGER
-    distance to append to both sides of input interval for viewing [default 60% of plot interval]
+	-w INTEGER, --window=INTEGER
+		distance to append to both sides of input interval for viewing [default 61.8% of plot interval]
 
-  --ymin=INTEGER
-    minimum value for y axis [default NULL]
+	--ymin=INTEGER
+		minimum value for y axis [default NULL]
 
-  --ymax=INTEGER
-    maximum value for y axis [default NULL]
+	--ymax=INTEGER
+		maximum value for y axis [default NULL]
 
-  -n INTEGER, --normDist=INTEGER
-    distance outside region to use for normalization (both sides) [default 5000000]
+	-n INTEGER, --normDist=INTEGER
+		distance outside region to use for normalization (both sides) [default 5000000]
 
-  -t CHARACTER, --title=CHARACTER
-    custom title for plot [default NULL]
+	-t CHARACTER, --title=CHARACTER
+		custom title for plot [default NULL]
 
-  -q, --quiet
-    disable verbose output [default FALSE]
+	-p, --probs
+		add CNV probabilities below each higlighted interval [default FALSE]
 
-  -l, --nolegend
-    disable legend on plot [default TRUE]
+	-u, --noUCSC
+		disable UCSC track plotting [default FALSE]
 
-  -h, --help
-    Show this help message and exit
+	-q, --quiet
+		disable verbose output [default FALSE]
+
+	-l, --nolegend
+		disable legend on plot [default TRUE]
+
+	-h, --help
+		Show this help message and exit
 ```
 **Usage Notes:**  
 1. Several base-level options (such as ```returnData``` or ```plot```) are not wrapped by the Rscript implementation. To access those features, import the R function directly and run from the R command prompt.  

@@ -18,7 +18,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                    UCSCtracks=c("Gene",      #append UCSC sequence context information; choose either NULL
                                 "SegDup",    #or up to three among "Gene", "Gap", "RepMask", "blacklist", and "SegDup"
                                 "Gap"),
-                   probs=FALSE,               #option to add CNV probabilities below each highlighted interval
+                   probs=TRUE,               #option to add CNV probabilities below each highlighted interval
                    title=NULL,               #option to add custom title. Overrides default
                    legend=T,                 #logical option to plot legend
                    output=NULL,              #path to output as pdf. If NULL, will plot to active device
@@ -280,18 +280,18 @@ CNView <- function(chr,start,end,            #region to be plotted
           for(i in 1:length(highlight)){
             pDEL <- pt(mean(plotSet[which(plotSet$End>=highlight[[i]][1] & 
                                             plotSet$Start<=highlight[[i]][2]),
-                                    sampIdx]),
+                                    sampIdx[k]]),
                             df=ncol(plotSet)-7,lower.tail=T)
             pDEL <- paste(round(as.numeric(strsplit(format(pDEL,scientific=T),split="e")[[1]][1]),3),
                           "E",strsplit(format(pDEL,scientific=T),split="e")[[1]][2],sep="")
             pDUP <- pt(mean(plotSet[which(plotSet$End>=highlight[[i]][1] & 
                                             plotSet$Start<=highlight[[i]][2]),
-                                    sampIdx]),
+                                    sampIdx[k]]),
                        df=ncol(plotSet)-7,lower.tail=F)
             pDUP <- paste(round(as.numeric(strsplit(format(pDUP,scientific=T),split="e")[[1]][1]),3),
                           "E",strsplit(format(pDUP,scientific=T),split="e")[[1]][2],sep="")
             text(x=mean(highlight[[i]]),y=par("usr")[3],pos=3,cex=1.5,
-                 labels=paste("p(DEL) = ",pDEL,"\np(DUP) = ",pDUP,sep=""))
+                 labels=paste("p(Dup) = ",pDEL,"\np(Del) = ",pDUP,sep=""))
           }
         }
       }
@@ -300,10 +300,10 @@ CNView <- function(chr,start,end,            #region to be plotted
                     round_any(par("usr")[4],2),by=2),
            las=2)
       mtext(paste("Norm. Depth t Score",sep=""),
-            side=2,line=2,cex=0.7)
+            side=2,line=2,cex=1.2)
       #Print Sample ID if >1 sample
       if(nsamp>1){
-        text(x=mean(par("usr")[1:2]),y=par("usr")[4],labels=names(plotSet)[sampIdx[k]],cex=1.2,pos=1,font=2)
+        text(x=mean(par("usr")[1:2]),y=par("usr")[4],labels=names(plotSet)[sampIdx[k]],cex=2,pos=1,font=2)
       }
       
       ##Legend & title if first sample
@@ -335,11 +335,11 @@ CNView <- function(chr,start,end,            #region to be plotted
                    pch=c(NA,NA,NA,15,15),pt.cex=c(1,1,1,1.5,1.5),
                    lty=c(1,1,2,NA,NA),lwd=c(4,4,1,NA,NA),
                    col=c("blue","red","black","gray54","lightgray"),
-                   bg="white",cex=0.8)
+                   bg="white",cex=1.3)
             text(x=par("usr")[1],
                  y=0.95*par("usr")[4],
                  labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                 font=4,pos=4)
+                 font=4,pos=4,cex=1.5)
           } else if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) < 0){
             legend("bottomright",
                    legend=c(paste("p(Dup) < Bonferroni (df=",ncol(plotSet)-8,")",sep=""),
@@ -350,11 +350,11 @@ CNView <- function(chr,start,end,            #region to be plotted
                    pch=c(NA,NA,NA,15,15),pt.cex=c(1,1,1,1.5,1.5),
                    lty=c(1,1,2,NA,NA),lwd=c(4,4,1,NA,NA),
                    col=c("blue","red","black","gray54","lightgray"),
-                   bg="white",cex=0.7)
+                   bg="white",cex=1.3)
             text(x=par("usr")[1],
                  y=0.95*par("usr")[3],
                  labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                 font=4,pos=4)
+                 font=4,pos=4,cex=1.5)
           }
         }
       }

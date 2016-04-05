@@ -212,7 +212,7 @@ bash$ cat ~/highlights.txt
 8820980	8821591	darkorange
 8823650	8860556	blue
 ```  
-The first two columns correspond to the intervals to highlight, and the third column corresponds to the R color to shade the interval. Also that, if ```-p```/```--probs``` is specified in conjunction with ```-h```/```--highlight```, separate probabilites are computed for each interval in the highlight parameters file.  
+The first two columns correspond to the intervals to highlight, and the third column corresponds to the R color to shade the interval. Also note that, if ```-p```/```--probs``` is specified in conjunction with ```-h```/```--highlight```, separate probabilites are computed for each interval in the highlight parameters file.  
 
 
 

@@ -23,6 +23,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                    legend=T,                 #logical option to plot legend
                    output=NULL,              #path to output as pdf. If NULL, will plot to active device
                    plot=TRUE,                #logical option to disable plot step; mandatory for output!=NULL
+                   noUnix=FALSE,             #logical option to specify a non-unix OS (i.e. no awk, needed to read data)
                    returnData=FALSE,         #logical option to return df of all normalized coverage values
                    quiet=FALSE){             #logical option to disable verbose output
   
@@ -90,15 +91,20 @@ CNView <- function(chr,start,end,            #region to be plotted
   
   ##Subset & Load Plotting Values##
   if(quiet==F){cat("Filtering & loading coverage matrix...")}
-  if(normDist!="genome"){
-    subcovmatrix <- tempfile()
-    system(paste("head -n1 ",covmatrix," > ",subcovmatrix,sep=""))
-    system(paste("awk -v OFS=\"\t\" '{ if ($1==\"",chr,"\" && $2<=",end+normDist," && $3>=",start-normDist,") print $0 }' ",covmatrix," >> ",
-                 subcovmatrix,sep=""))
+  if(noUnix=TRUE){
+    cov <- read.table(covmatrix,header=T,sep="\t")
+    cov <- cov[which(cov[,1]==chr & cov[,2]<=end & cov[,3]>=start),]
   }else{
-    subcovmatrix <- covmatrix
+    if(normDist!="genome"){
+      subcovmatrix <- tempfile()
+      system(paste("head -n1 ",covmatrix," > ",subcovmatrix,sep=""))
+      system(paste("awk -v OFS=\"\t\" '{ if ($1==\"",chr,"\" && $2<=",end+normDist," && $3>=",start-normDist,") print $0 }' ",covmatrix," >> ",
+                   subcovmatrix,sep=""))
+    }else{
+      subcovmatrix <- covmatrix
+    }
+    cov <- read.table(subcovmatrix,header=T,sep="\t")
   }
-  cov <- read.table(subcovmatrix,header=T,sep="\t")
   if(quiet==F){cat(" Complete\n")}
   
   ##Rebin Helper FX##
@@ -181,12 +187,12 @@ CNView <- function(chr,start,end,            #region to be plotted
   if(plot==T){
     if(!(is.null(output))){
       if(quiet==F){cat(paste("Plotting samples to ",output,"...",sep=""))}
-      pdf(output,width=10.5,height=(5+(2.5*nsamp)))
+      pdf(output,width=7,height=(3+(1.5*nsamp)))
     } else {
       if(quiet==F){cat("Plotting samples to screen...")}
     }
     par(mar=c(0,0,0,0),
-        oma=c(5,4,4,2))
+        oma=c(5,5,4,3))
     if(!(is.null(UCSCtracks))){
       layout(matrix(c(1:(nsamp+1)),byrow=T),heights=c(rep(4,nsamp),1))
     } else {
@@ -290,7 +296,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                        df=ncol(plotSet)-7,lower.tail=F)
             pDUP <- paste(round(as.numeric(strsplit(format(pDUP,scientific=T),split="e")[[1]][1]),3),
                           "E",strsplit(format(pDUP,scientific=T),split="e")[[1]][2],sep="")
-            text(x=mean(highlight[[i]]),y=par("usr")[3],pos=3,cex=1.3,
+            text(x=mean(highlight[[i]]),y=par("usr")[3],pos=3,cex=1,
                  labels=paste("p(Del) = ",pDEL,"\np(Dup) = ",pDUP,sep=""))
           }
         }
@@ -300,35 +306,35 @@ CNView <- function(chr,start,end,            #region to be plotted
                     round_any(par("usr")[4],2),by=2),
            las=2)
       mtext(paste("Norm. Depth t Score",sep=""),
-            side=2,line=2,cex=1.2)
+            side=2,line=2)
       #Print Sample ID if >1 sample
       if(nsamp>1){
-        text(x=mean(par("usr")[1:2]),y=par("usr")[4],labels=names(plotSet)[sampIdx[k]],cex=2,pos=1,font=2)
+        text(x=mean(par("usr")[1:2]),y=par("usr")[4],labels=names(plotSet)[sampIdx[k]],cex=1,pos=1,font=2)
       }
       
       ##Legend & title if first sample
       if(k==1){
         #Title
         if(!(is.null(title))){
-          mtext(text=title,outer=T,side=3,line=1,font=2,cex=1.6)
+          mtext(text=title,outer=T,side=3,line=1,font=2,cex=1.1)
         }else{
           if(nsamp==1){
             mtext(text=paste("Normalized Sequencing Depth of ",sampleID,sep=""),
-                  outer=T,side=3,line=1,font=2,cex=1.6)
+                  outer=T,side=3,line=1,font=2,cex=1.1)
           }else{
             mtext(text=paste("Normalized Sequencing Depth of ",nsamp," Samples",sep=""),
-                  outer=T,side=3,line=1,font=2,cex=1.6)
+                  outer=T,side=3,line=1,font=2,cex=1.1)
           }
         }
         mtext(text=paste("chr",chr," : ",prettyNum(max((start-window),0),big.mark=",")," - ",
                          prettyNum(end+window,big.mark=","),sep=""),
-              outer=T,side=3,line=0)
+              outer=T,side=3,line=0,cex=0.7)
         #Legend
         if(legend==T){
           if(nsamp==1){
             lcex=0.8
           }else{
-            lcex=1.3
+            lcex=0.8
           }
           if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){
             legend("topright",
@@ -344,7 +350,7 @@ CNView <- function(chr,start,end,            #region to be plotted
             text(x=par("usr")[1],
                  y=0.95*par("usr")[4],
                  labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                 font=4,pos=4,cex=1.5)
+                 font=4,pos=4,cex=1.2)
           } else if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) < 0){
             legend("bottomright",
                    legend=c(paste("p(Dup) < Bonferroni (df=",ncol(plotSet)-8,")",sep=""),
@@ -359,7 +365,7 @@ CNView <- function(chr,start,end,            #region to be plotted
             text(x=par("usr")[1],
                  y=0.95*par("usr")[3],
                  labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                 font=4,pos=4,cex=1.5)
+                 font=4,pos=4,cex=1.2)
           }
         }
       }
@@ -388,8 +394,7 @@ CNView <- function(chr,start,end,            #region to be plotted
            labels=prettyNum(seq(min(plotSet$Start),
                                 max(plotSet$Start),
                                 by=(max(plotSet$Start)-min(plotSet$Start))/8),
-                            big.mark=","),
-           cex.axis=0.9)
+                            big.mark=","))
       if("Gap" %in% UCSCtracks){
         gaps <- dbGetQuery(UCSC,paste("SELECT chromStart, chromEnd, type FROM gap WHERE `chrom` = 'chr",chr,"' ",
                                       "AND `chromStart` <= ",end+window," ",
@@ -449,10 +454,10 @@ CNView <- function(chr,start,end,            #region to be plotted
                      y1=grep("Gene",UCSCtracks)-0.35,
                      col="darkgreen")
           }
-          exons <- unique(data.frame("start"=as.character(unlist(sapply(genes$exonStarts,
-                                                                        function(string){return(strsplit(string,split=","))}))),
-                                     "end"=as.character(unlist(sapply(genes$exonEnds,
-                                                                      function(string){return(strsplit(string,split=","))})))))
+          exons <- unique(data.frame("start"=as.numeric(as.character(unlist(sapply(genes$exonStarts,
+                                                                        function(string){return(strsplit(string,split=","))})))),
+                                     "end"=as.numeric(as.character(unlist(sapply(genes$exonEnds,
+                                                                      function(string){return(strsplit(string,split=","))}))))))
           for(i in 1:nrow(exons)){
             rect(xleft=exons[i,1],
                  xright=exons[i,2],
@@ -469,8 +474,7 @@ CNView <- function(chr,start,end,            #region to be plotted
         }
       }
       axis(2,at=c(seq(0.5,length(UCSCtracks)-0.5)),
-           labels=UCSCtracks,
-           cex.axis=0.6,las=1,tick=F)
+           labels=UCSCtracks,,las=1,tick=F)
       if(quiet==F){cat(" Complete\n")}
     }
     
@@ -481,8 +485,7 @@ CNView <- function(chr,start,end,            #region to be plotted
          labels=prettyNum(seq(min(plotSet$Start),
                               max(plotSet$Start),
                               by=(max(plotSet$Start)-min(plotSet$Start))/8),
-                          big.mark=","),
-         cex.axis=0.9)
+                          big.mark=","))
     mtext(paste("chr",chr," Coordinate (bp)",sep=""),
           side=1,outer=T,line=2)
     

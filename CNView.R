@@ -91,7 +91,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   
   ##Subset & Load Plotting Values##
   if(quiet==F){cat("Filtering & loading coverage matrix...")}
-  if(noUnix=TRUE){
+  if(noUnix==TRUE){
     cov <- read.table(covmatrix,header=T,sep="\t")
     cov <- cov[which(cov[,1]==chr & cov[,2]<=end & cov[,3]>=start),]
   }else{

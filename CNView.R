@@ -1,6 +1,6 @@
 #! /usr/bin/env Rscript
 
-#CNView: Code to plot normalized coverage for CNV visualization from WGS data
+#CNView: a visualization and annotation tool for copy number variation from whole-genome sequencing
 
 # Copyright (c) 2016 Ryan Collins <rcollins@chgr.mgh.harvard.edu>
 # Distributed under terms of the MIT license.
@@ -150,7 +150,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   if(quiet==F){cat("Performing intra-sample normalization...")}
   res[,4:ncol(res)] <- apply(res[,4:ncol(res)],2,
                              function(vals){
-                               nvals <- as.numeric(vals)/median(as.numeric(vals))
+                               nvals <- as.numeric(vals)/median(as.numeric(vals[which(vals>0)]))
                                nvals[is.infinite(nvals)] <- NA
                                return(nvals)
                              })

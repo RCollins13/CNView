@@ -19,6 +19,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                                 "SegDup",    #or up to three among "Gene", "Gap", "RepMask", "blacklist", and "SegDup"
                                 "Gap"),
                    probs=TRUE,               #option to add CNV probabilities below each highlighted interval
+                   gcex=1,                   #global scaling for all fonts
                    title=NULL,               #option to add custom title. Overrides default
                    legend=T,                 #logical option to plot legend
                    output=NULL,              #path to output as pdf. If NULL, will plot to active device
@@ -297,7 +298,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                        df=ncol(plotSet)-7,lower.tail=F)
             pDUP <- paste(round(as.numeric(strsplit(format(pDUP,scientific=T),split="e")[[1]][1]),3),
                           "E",strsplit(format(pDUP,scientific=T),split="e")[[1]][2],sep="")
-            text(x=mean(highlight[[i]]),y=par("usr")[3],pos=3,cex=1,
+            text(x=mean(highlight[[i]]),y=par("usr")[3],pos=3,cex=gcex,
                  labels=paste("p(Del) = ",pDEL,"\np(Dup) = ",pDUP,sep=""))
           }
         }
@@ -310,33 +311,53 @@ CNView <- function(chr,start,end,            #region to be plotted
             side=2,line=2)
       #Print Sample ID if >1 sample
       if(nsamp>1){
-        text(x=mean(par("usr")[1:2]),y=par("usr")[4],labels=names(plotSet)[sampIdx[k]],cex=1,pos=1,font=2)
+        text(x=mean(par("usr")[1:2]),y=par("usr")[4],labels=names(plotSet)[sampIdx[k]],cex=gcex,pos=1,font=2)
       }
       
-      ##Legend & title if first sample
+      ##Title if first sample
       if(k==1){
         #Title
         if(!(is.null(title))){
-          mtext(text=title,outer=T,side=3,line=1,font=2,cex=1.1)
+          mtext(text=title,outer=T,side=3,line=1,font=2,cex=1.1*gcex)
         }else{
           if(nsamp==1){
             mtext(text=paste("Normalized Sequencing Depth of ",sampleID,sep=""),
-                  outer=T,side=3,line=1,font=2,cex=1.1)
+                  outer=T,side=3,line=1,font=2,cex=1.1*gcex)
           }else{
             mtext(text=paste("Normalized Sequencing Depth of ",nsamp," Samples",sep=""),
-                  outer=T,side=3,line=1,font=2,cex=1.1)
+                  outer=T,side=3,line=1,font=2,cex=1.1*gcex)
           }
         }
         mtext(text=paste("chr",chr," : ",prettyNum(max((start-window),0),big.mark=",")," - ",
                          prettyNum(end+window,big.mark=","),sep=""),
-              outer=T,side=3,line=0,cex=0.7)
-        #Legend
-        if(legend==T){
-          if(nsamp==1){
-            lcex=0.8
+              outer=T,side=3,line=0,cex=0.7*gcex)
+        #Legend & resolution
+        if(nsamp==1){
+          if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){
+              text(x=par("usr")[1],
+                   y=0.9*par("usr")[4],
+                   labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
+                   font=4,pos=4,cex=1*gcex)
           }else{
-            lcex=0.8
+              text(x=par("usr")[1],
+                   y=0.9*par("usr")[3],
+                   labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
+                   font=4,pos=4,cex=1*gcex)
           }
+        }else{
+          if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){
+              text(x=par("usr")[1],
+                   y=0.9*par("usr")[4],
+                   labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
+                   font=4,pos=4,cex=1.3*gcex)
+          }else{
+              text(x=par("usr")[1],
+                   y=0.9*par("usr")[3],
+                   labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
+                   font=4,pos=4,cex=1.3*gcex)
+          }
+        }
+        if(legend==T){
           if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){
             legend("topright",
                    legend=c(paste("p(Dup) < Bonferroni (df=",ncol(plotSet)-8,")",sep=""),
@@ -344,14 +365,10 @@ CNView <- function(chr,start,end,            #region to be plotted
                             "Median t Score",
                             "1 * MAD",
                             "2 * MAD"),
-                   pch=c(NA,NA,NA,15,15),pt.cex=c(1,1,1,1.5,1.5),
+                   pch=c(NA,NA,NA,15,15),pt.cex=c(1,1,1,1.5,1.5)*gcex,
                    lty=c(1,1,2,NA,NA),lwd=c(4,4,1,NA,NA),
                    col=c("blue","red","black","gray54","lightgray"),
-                   bg="white",cex=lcex)
-            text(x=par("usr")[1],
-                 y=0.95*par("usr")[4],
-                 labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                 font=4,pos=4,cex=1.2)
+                   bg="white",cex=0.8*gcex)
           } else if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) < 0){
             legend("bottomright",
                    legend=c(paste("p(Dup) < Bonferroni (df=",ncol(plotSet)-8,")",sep=""),
@@ -359,14 +376,10 @@ CNView <- function(chr,start,end,            #region to be plotted
                             "Median t Score",
                             "1 * MAD",
                             "2 * MAD"),
-                   pch=c(NA,NA,NA,15,15),pt.cex=c(1,1,1,1.5,1.5),
+                   pch=c(NA,NA,NA,15,15),pt.cex=c(1,1,1,1.5,1.5)*gcex,
                    lty=c(1,1,2,NA,NA),lwd=c(4,4,1,NA,NA),
                    col=c("blue","red","black","gray54","lightgray"),
-                   bg="white",cex=lcex)
-            text(x=par("usr")[1],
-                 y=0.95*par("usr")[3],
-                 labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                 font=4,pos=4,cex=1.2)
+                   bg="white",cex=0.8*gcex)
           }
         }
       }
@@ -470,7 +483,7 @@ CNView <- function(chr,start,end,            #region to be plotted
             text(x=(max(c(min(genes[which(genes$name2==i),1]),par("usr")[1]))+min(c(max(genes[which(genes$name2==i),2]),par("usr")[2])))/2,
                  y=grep("Gene",UCSCtracks)-.8,
                  labels=i,
-                 cex=0.75,font=4)
+                 cex=0.75*gcex,font=4)
           }
         }
       }
@@ -548,6 +561,9 @@ option_list <- list(
               metavar="integer"),
   make_option(c("-n","--normDist"), type="integer", default=5000000,
               help="distance outside region to use for normalization (both sides) [default %default]",
+              metavar="integer"),
+  make_option(c("-g","--gcex"), type="integer", default=1,
+              help="scalar applied to all fonts and legend [default %default]",
               metavar="integer"),
   make_option(c("-t","--title"), type="character", default=NULL,
               help="custom title for plot [default %default]",
@@ -631,6 +647,7 @@ CNView(chr=args$args[1],
        normDist=opts$normDist,
        UCSCtracks=UCSCtracks,
        probs=opts$probs,
+       gcex=opts$gcex,
        title=opts$title,
        legend=opts$nolegend,
        output=args$args[6],

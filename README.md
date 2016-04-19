@@ -66,6 +66,12 @@ Options:
 	-n INTEGER, --normDist=INTEGER
 		distance outside region to use for normalization (both sides) [default 5000000]
 
+	--gcex=INTEGER
+		scalar applied to all fonts and legend [default 1]
+
+	--names=CHARACTER
+		list of custom names to be applied to each plot panel (e.g. 'mother', 'father', 'child', rather than actual sample IDs) [default NA]
+
 	-t CHARACTER, --title=CHARACTER
 		custom title for plot [default NULL]
 
@@ -74,6 +80,9 @@ Options:
 
 	-u, --noUCSC
 		disable UCSC track plotting [default FALSE]
+
+	-G, --nogenesymbols
+		disable gene symbol printing below gene bodies in UCSC tracks [default FALSE]
 
 	-q, --quiet
 		disable verbose output [default FALSE]

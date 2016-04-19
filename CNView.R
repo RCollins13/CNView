@@ -181,7 +181,8 @@ CNView <- function(chr,start,end,            #region to be plotted
   plotSet[is.na(plotSet)] <- 0
   
   ##Get Sample Indexes##
-  sampIdx <- as.vector(sapply(as.vector(sampleID),function(val){grep(val,colnames(plotSet),ignore.case=T)}))
+  sampIdx <- as.vector(sapply(as.vector(sampleID),function(val){grep(paste("\\b",as.character(val),"\\b",sep=""),
+                                                                     colnames(plotSet),ignore.case=F)}))
   
   ##Output Options##  
   if(plot==T){
@@ -631,6 +632,7 @@ CNView(chr=args$args[1],
        UCSCtracks=UCSCtracks,
        probs=opts$probs,
        title=opts$title,
+       legend=opts$nolegend,
        output=args$args[6],
        plot=T,
        returnData=F,

@@ -18,9 +18,11 @@ CNView <- function(chr,start,end,            #region to be plotted
                    UCSCtracks=c("Gene",      #append UCSC sequence context information; choose either NULL
                                 "SegDup",    #or up to three among "Gene", "Gap", "RepMask", "blacklist", and "SegDup"
                                 "Gap"),
+                   genesymbols=TRUE,         #print gene symbols below UCSC gene body annotations
                    probs=TRUE,               #option to add CNV probabilities below each highlighted interval
                    gcex=1,                   #global scaling for all fonts
                    title=NULL,               #option to add custom title. Overrides default
+                   panelnames=NA,            #optional vector for custom names printed above each plot; only works for multi-sample plots
                    legend=T,                 #logical option to plot legend
                    output=NULL,              #path to output as pdf. If NULL, will plot to active device
                    plot=TRUE,                #logical option to disable plot step; mandatory for output!=NULL
@@ -266,10 +268,6 @@ CNView <- function(chr,start,end,            #region to be plotted
                                   par("usr")[4],
                                   col=adjustcolor(highlightcol[i],alpha=0.2),
                                   border=NA)
-                             abline(v=highlight[[i]][1],
-                                    lty=3,lwd=2)
-                             abline(v=highlight[[i]][2],
-                                    lty=3,lwd=2)
                            }
                          },
                          segments(x0=interleave(plotSet[seq(1,(nrow(plotSet)-1)),2],
@@ -281,7 +279,15 @@ CNView <- function(chr,start,end,            #region to be plotted
                                   y1=interleave(plotSet[seq(1,(nrow(plotSet)-1)),sampIdx[k]],
                                                 plotSet[seq(2,(nrow(plotSet))),sampIdx[k]]),
                                   lwd=3,
-                                  col=colval)))
+                                  col=colval),
+                         if(!(is.null(highlight))){
+                           for(i in 1:length(highlight)){
+                             abline(v=highlight[[i]][1],
+                                    lty=3)
+                             abline(v=highlight[[i]][2],
+                                    lty=3)
+                           }
+                         }))
       #Add probabilites, if optioned
       if(probs==T){
         if(!(is.null(highlight))){
@@ -289,7 +295,7 @@ CNView <- function(chr,start,end,            #region to be plotted
             pDEL <- pt(mean(plotSet[which(plotSet$End>=highlight[[i]][1] & 
                                             plotSet$Start<=highlight[[i]][2]),
                                     sampIdx[k]]),
-                            df=ncol(plotSet)-7,lower.tail=T)
+                       df=ncol(plotSet)-7,lower.tail=T)
             pDEL <- paste(round(as.numeric(strsplit(format(pDEL,scientific=T),split="e")[[1]][1]),3),
                           "E",strsplit(format(pDEL,scientific=T),split="e")[[1]][2],sep="")
             pDUP <- pt(mean(plotSet[which(plotSet$End>=highlight[[i]][1] & 
@@ -306,12 +312,20 @@ CNView <- function(chr,start,end,            #region to be plotted
       #Y Axis
       axis(2,at=seq(round_any(par("usr")[3],2),
                     round_any(par("usr")[4],2),by=2),
-           las=2)
+           las=2,cex.axis=gcex)
       mtext(paste("Norm. Depth t Score",sep=""),
-            side=2,line=2)
+            side=2,line=2,cex=gcex)
       #Print Sample ID if >1 sample
       if(nsamp>1){
-        text(x=mean(par("usr")[1:2]),y=par("usr")[4],labels=names(plotSet)[sampIdx[k]],cex=gcex,pos=1,font=2)
+        if(is.na(panelnames)){
+          text(x=mean(par("usr")[1:2]),y=par("usr")[4],
+               labels=names(plotSet)[sampIdx[k]],
+               cex=1.2*gcex,pos=1,font=2)
+        }else{
+          text(x=mean(par("usr")[1:2]),y=par("usr")[4],
+               labels=panelnames[k],
+               cex=1.2*gcex,pos=1,font=2)
+        }
       }
       
       ##Title if first sample
@@ -338,15 +352,15 @@ CNView <- function(chr,start,end,            #region to be plotted
           rcex=1.3
         }
         if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){
-            text(x=par("usr")[1],
-                 y=0.9*par("usr")[4],
-                 labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                 font=4,pos=4,cex=rcex*gcex)
+          text(x=par("usr")[1],
+               y=0.9*par("usr")[4],
+               labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
+               font=4,pos=4,cex=rcex*gcex)
         }else{
-            text(x=par("usr")[1],
-                 y=0.9*par("usr")[3],
-                 labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                 font=4,pos=4,cex=rcex*gcex)
+          text(x=par("usr")[1],
+               y=0.9*par("usr")[3],
+               labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
+               font=4,pos=4,cex=rcex*gcex)
         }
         if(legend==T){
           if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){
@@ -386,20 +400,13 @@ CNView <- function(chr,start,end,            #region to be plotted
                         dbname='hg19',
                         host='genome-mysql.cse.ucsc.edu')
       if(quiet==F){cat(" Complete\n")}
-
+      
       if(quiet==F){cat("Appending UCSC tracks...")}
       plot(plotSet$Start,
            c(1,2,rep(3,nrow(plotSet)-2)),
            ylim=c(0,3),
            type="n",xaxt="n",yaxt="n",
            ylab="",xlab="",xaxs="i")
-      axis(1,at=seq(min(plotSet$Start),
-                    max(plotSet$Start),
-                    by=(max(plotSet$Start)-min(plotSet$Start))/8),
-           labels=prettyNum(seq(min(plotSet$Start),
-                                max(plotSet$Start),
-                                by=(max(plotSet$Start)-min(plotSet$Start))/8),
-                            big.mark=","))
       if("Gap" %in% UCSCtracks){
         gaps <- dbGetQuery(UCSC,paste("SELECT chromStart, chromEnd, type FROM gap WHERE `chrom` = 'chr",chr,"' ",
                                       "AND `chromStart` <= ",end+window," ",
@@ -446,40 +453,55 @@ CNView <- function(chr,start,end,            #region to be plotted
         genes <- unique(dbGetQuery(UCSC,paste("SELECT txStart, txEnd, name2, strand, exonStarts, exonEnds FROM refGene WHERE `chrom` = 'chr",chr,"' ",
                                               "AND `txStart` <= ",end+window," ",
                                               "AND `txEnd` >= ",start-window,sep="")))
+        if(genesymbols==T){
+          genesqueeze=0.6
+        }else{
+          genesqueeze=0.9
+        }
         if(nrow(genes) > 0){
           for(i in 1:nrow(genes)){
             rect(xleft=genes$txStart[i],
-                 ybottom=grep("Gene",UCSCtracks)-.6,
+                 ybottom=grep("Gene",UCSCtracks)-genesqueeze,
                  xright=genes$txEnd[i],
                  ytop=grep("Gene",UCSCtracks)-.1,
                  border=NA,col="lightgreen")
             segments(x0=genes$txStart[i],
                      x1=genes$txEnd[i],
-                     y0=grep("Gene",UCSCtracks)-0.35,
-                     y1=grep("Gene",UCSCtracks)-0.35,
+                     y0=mean(c(grep("Gene",UCSCtracks)-.1,
+                             grep("Gene",UCSCtracks)-genesqueeze)),
+                     y1=mean(c(grep("Gene",UCSCtracks)-.1,
+                             grep("Gene",UCSCtracks)-genesqueeze)),
                      col="darkgreen")
           }
           exons <- unique(data.frame("start"=as.numeric(as.character(unlist(sapply(genes$exonStarts,
-                                                                        function(string){return(strsplit(string,split=","))})))),
+                                                                                   function(string){return(strsplit(string,split=","))})))),
                                      "end"=as.numeric(as.character(unlist(sapply(genes$exonEnds,
-                                                                      function(string){return(strsplit(string,split=","))}))))))
+                                                                                 function(string){return(strsplit(string,split=","))}))))))
+
           for(i in 1:nrow(exons)){
             rect(xleft=exons[i,1],
                  xright=exons[i,2],
-                 ybottom=grep("Gene",UCSCtracks)-.55,
-                 ytop=grep("Gene",UCSCtracks)-.15,
+                 ybottom=grep("Gene",UCSCtracks)-(genesqueeze-0.05),
+                 ytop=grep("Gene",UCSCtracks)-0.15,
                  border=NA,col="darkgreen")
           }
-          for(i in unique(genes$name2)){
-            text(x=(max(c(min(genes[which(genes$name2==i),1]),par("usr")[1]))+min(c(max(genes[which(genes$name2==i),2]),par("usr")[2])))/2,
-                 y=grep("Gene",UCSCtracks)-.8,
-                 labels=i,
-                 cex=0.75*gcex,font=4)
+          if(genesymbols==T){
+            for(i in unique(genes$name2)){
+              text(x=(max(c(min(genes[which(genes$name2==i),1]),par("usr")[1]))+min(c(max(genes[which(genes$name2==i),2]),par("usr")[2])))/2,
+                   y=grep("Gene",UCSCtracks)-.8,
+                   labels=i,
+                   cex=0.75*gcex,font=4)
+            }
           }
         }
       }
+      if(nsamp==1){
+        UCSClabcex=0.7
+      }else{
+        UCSClabcex=1
+      }
       axis(2,at=c(seq(0.5,length(UCSCtracks)-0.5)),
-           labels=UCSCtracks,,las=1,tick=F)
+           labels=UCSCtracks,cex.axis=UCSClabcex,las=1,tick=F)
       if(quiet==F){cat(" Complete\n")}
     }
     
@@ -487,6 +509,7 @@ CNView <- function(chr,start,end,            #region to be plotted
     axis(1,at=seq(min(plotSet$Start),
                   max(plotSet$Start),
                   by=(max(plotSet$Start)-min(plotSet$Start))/8),
+         cex.axis=UCSClabcex,
          labels=prettyNum(seq(min(plotSet$Start),
                               max(plotSet$Start),
                               by=(max(plotSet$Start)-min(plotSet$Start))/8),
@@ -544,18 +567,21 @@ option_list <- list(
   make_option(c("-w","--window"), type="integer", default=NULL,
               help="distance to append to both sides of input interval for viewing [default 61.8% of plot interval]",
               metavar="integer"),
-  make_option(c("--ymin"), type="integer", default=NULL,
+  make_option("--ymin", type="integer", default=NULL,
               help="minimum value for y axis [default %default]", 
               metavar="integer"),
-  make_option(c("--ymax"), type="integer", default=NULL,
+  make_option("--ymax", type="integer", default=NULL,
               help="maximum value for y axis [default %default]", 
               metavar="integer"),
   make_option(c("-n","--normDist"), type="integer", default=5000000,
               help="distance outside region to use for normalization (both sides) [default %default]",
               metavar="integer"),
-  make_option(c("-g","--gcex"), type="integer", default=1,
+  make_option("--gcex", type="integer", default=1,
               help="scalar applied to all fonts and legend [default %default]",
               metavar="integer"),
+  make_option("--names", type="character", default=NA,
+              help="list of custom names to be applied to each plot panel (e.g. 'mother', 'father', 'child', rather than actual sample IDs) [default %default]",
+              metavar="character"),
   make_option(c("-t","--title"), type="character", default=NULL,
               help="custom title for plot [default %default]",
               metavar="character"),
@@ -563,6 +589,8 @@ option_list <- list(
               help="add CNV probabilities below each higlighted interval [default %default]"),
   make_option(c("-u","--noUCSC"), action="store_true", default=FALSE,
               help="disable UCSC track plotting [default %default]"),
+  make_option(c("-G","--nogenesymbols"), action="store_true", default=FALSE,
+              help="disable gene symbol printing below gene bodies in UCSC tracks [default %default]"),
   make_option(c("-q","--quiet"), action="store_true", default=FALSE,
               help="disable verbose output [default %default]"),
   make_option(c("-l", "--nolegend"), action="store_false", default=TRUE,
@@ -620,6 +648,11 @@ if(opts$noUCSC==TRUE){
 }else{
   UCSCtracks=c("Gene","SegDup","Gap")
 }
+if(!(is.na(opts$names)) & file.exists(opts$names)==T){
+  names <- as.vector(read.table(opts$names,header=F)[,1])
+}else{
+  names <- opts$names
+}
 
 #Runs CNView function
 if(opts$quiet==T){
@@ -637,9 +670,11 @@ CNView(chr=args$args[1],
        yscale=yscale,
        normDist=opts$normDist,
        UCSCtracks=UCSCtracks,
+       genesymbols=!(opts$nogenesymbols),
        probs=opts$probs,
        gcex=opts$gcex,
        title=opts$title,
+       panelnames=names,
        legend=opts$nolegend,
        output=args$args[6],
        plot=T,

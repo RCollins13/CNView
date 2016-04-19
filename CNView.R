@@ -333,29 +333,20 @@ CNView <- function(chr,start,end,            #region to be plotted
               outer=T,side=3,line=0,cex=0.7*gcex)
         #Legend & resolution
         if(nsamp==1){
-          if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){
-              text(x=par("usr")[1],
-                   y=0.9*par("usr")[4],
-                   labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                   font=4,pos=4,cex=1*gcex)
-          }else{
-              text(x=par("usr")[1],
-                   y=0.9*par("usr")[3],
-                   labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                   font=4,pos=4,cex=1*gcex)
-          }
+          rcex=1
         }else{
-          if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){
-              text(x=par("usr")[1],
-                   y=0.9*par("usr")[4],
-                   labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                   font=4,pos=4,cex=1.3*gcex)
-          }else{
-              text(x=par("usr")[1],
-                   y=0.9*par("usr")[3],
-                   labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
-                   font=4,pos=4,cex=1.3*gcex)
-          }
+          rcex=1.3
+        }
+        if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){
+            text(x=par("usr")[1],
+                 y=0.9*par("usr")[4],
+                 labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
+                 font=4,pos=4,cex=rcex*gcex)
+        }else{
+            text(x=par("usr")[1],
+                 y=0.9*par("usr")[3],
+                 labels=paste(prettyNum(binsize,big.mark=",")," bp Bins",sep=""),
+                 font=4,pos=4,cex=rcex*gcex)
         }
         if(legend==T){
           if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){

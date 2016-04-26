@@ -105,7 +105,7 @@ The input data for CNView is a tab-delimited [bed-style](https://genome.ucsc.edu
 An example coverage matrix at 100bp binsize for human libraries aligned to reference genome hg19 would look something like this:  
 ```
 Chr  Start     End       SampleA  SampleB  SampleC  ...  SampleZ
-1    1         100       89       56       217      ...  141
+1    0         100       89       56       217      ...  141
 1    100       200       98       60       230      ...  132
 1    200       300       102      59       202      ...  142
 ...  ...       ...       ...      ...      ...      ...  ...

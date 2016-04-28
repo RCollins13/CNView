@@ -2,7 +2,7 @@
 
 #CNView: a visualization and annotation tool for copy number variation from whole-genome sequencing
 
-# Copyright (c) 2016 Ryan Collins <rcollins@chgr.mgh.harvard.edu>
+# Copyright (c) 2016 Ryan Collins <rlcollins@g.harvard.edu>
 # Distributed under terms of the MIT license.
 
 #Main plotting function, called later by Rscript (see bottom of script)

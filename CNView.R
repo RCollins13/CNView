@@ -395,6 +395,11 @@ CNView <- function(chr,start,end,            #region to be plotted
     if(quiet==F){cat(" Complete\n")}
     
     ##UCSC plot##
+    if(nsamp==1){
+      UCSClabcex=0.7
+    }else{
+      UCSClabcex=1
+    }
     if(!(is.null(UCSCtracks))){
       ##Connects to UCSC##
       if(quiet==F){cat("Attempting to connect to UCSC Genome Browser...")}
@@ -497,11 +502,6 @@ CNView <- function(chr,start,end,            #region to be plotted
             }
           }
         }
-      }
-      if(nsamp==1){
-        UCSClabcex=0.7
-      }else{
-        UCSClabcex=1
       }
       axis(2,at=c(seq(0.5,length(UCSCtracks)-0.5)),
            labels=UCSCtracks,cex.axis=UCSClabcex,las=1,tick=F)

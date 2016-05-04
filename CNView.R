@@ -52,6 +52,9 @@ CNView <- function(chr,start,end,            #region to be plotted
   if(file.exists(covmatrix)==F){
     stop('INPUT ERROR: coverage matrix file not found')
   }
+  if(noUnix==T){
+    warning('noUnix parameter specified as TRUE; operation speed will be substantially slower')
+  }
   
   ##Set preferences##
   options(scipen=1000, #disables scientific notation
@@ -70,15 +73,15 @@ CNView <- function(chr,start,end,            #region to be plotted
   ##Loads required packages; installs if necessary##
   if("RMySQL" %in% rownames(installed.packages()) == FALSE)
   {warning("RMySQL package not installed.  Attempting to install from CRAN...")
-   install.packages("RMySQL",repos="http://cran.rstudio.com/")}
+    install.packages("RMySQL",repos="http://cran.rstudio.com/")}
   suppressPackageStartupMessages(library(RMySQL))
   if("plyr" %in% rownames(installed.packages()) == FALSE)
   {warning("plyr package not installed.  Attempting to install from CRAN...")
-   install.packages("plyr",repos="http://cran.rstudio.com/")}
+    install.packages("plyr",repos="http://cran.rstudio.com/")}
   suppressPackageStartupMessages(library(plyr))
   if("MASS" %in% rownames(installed.packages()) == FALSE)
   {warning("MASS package not installed.  Attempting to install from CRAN...")
-   install.packages("MASS",repos="http://cran.rstudio.com")}
+    install.packages("MASS",repos="http://cran.rstudio.com")}
   suppressPackageStartupMessages(library(MASS))
   
   ##Parameter cleanup##
@@ -191,7 +194,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   if(plot==T){
     if(!(is.null(output))){
       if(quiet==F){cat(paste("Plotting samples to ",output,"...",sep=""))}
-      pdf(output,width=7,height=(3+(1.5*nsamp)))
+      pdf(output,width=7,height=(2.7+(1.4*nsamp)))
     } else {
       if(quiet==F){cat("Plotting samples to screen...")}
     }
@@ -468,16 +471,16 @@ CNView <- function(chr,start,end,            #region to be plotted
             segments(x0=genes$txStart[i],
                      x1=genes$txEnd[i],
                      y0=mean(c(grep("Gene",UCSCtracks)-.1,
-                             grep("Gene",UCSCtracks)-genesqueeze)),
+                               grep("Gene",UCSCtracks)-genesqueeze)),
                      y1=mean(c(grep("Gene",UCSCtracks)-.1,
-                             grep("Gene",UCSCtracks)-genesqueeze)),
+                               grep("Gene",UCSCtracks)-genesqueeze)),
                      col="darkgreen")
           }
           exons <- unique(data.frame("start"=as.numeric(as.character(unlist(sapply(genes$exonStarts,
                                                                                    function(string){return(strsplit(string,split=","))})))),
                                      "end"=as.numeric(as.character(unlist(sapply(genes$exonEnds,
                                                                                  function(string){return(strsplit(string,split=","))}))))))
-
+          
           for(i in 1:nrow(exons)){
             rect(xleft=exons[i,1],
                  xright=exons[i,2],

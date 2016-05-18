@@ -30,7 +30,7 @@ All content copyright (c) 2016 Ryan Collins and is distributed under terms of th
 ###CNView Summary  
 CNView is a low-profile visualization tool for read depth in batches of next-generation sequencing libraries and, more specifically, for visually inspecting sites of [copy-number variation (CNV)](https://en.wikipedia.org/wiki/Copy-number_variation).  It also implements a framework for estimating CNV probabilities and annotating CNV intervals.  
 
-The developers are open to tailoring applciations of CNView for specific needs or to customize "publication-quality" plots. Contact us at [rcollins@chgr.mgh.harvard.edu](mailto:rcollins@chgr.mgh.harvard.edu) if you have any questions or requests.
+The developers are open to tailoring applciations of CNView for specific needs or to customize "publication-quality" plots. CNView is also under active development. Contact us at [rcollins@chgr.mgh.harvard.edu](mailto:rcollins@chgr.mgh.harvard.edu) if you have any questions or requests.
 
 ###Accessing Reference Libraries  
 Like many depth-based CNV callers, CNView does not work on individual libraries. Instead, CNView jointly models multiple libraries simultaneously, normalizing both within and across libraries to reduce systematic coverage biases. Thus, while technically CNView will run successfully from just two libraries, generally CNVs become clearly resolvable with at least 20 total samples jointly modelled.  
@@ -134,7 +134,7 @@ This example is visualizing a 46kb deletion of two exons from *PDE11A*. The firs
 - ```~/cov_matrix.bed``` is the path to the input coverage matrix, like the [example](https://github.com/RCollins13/CNView#getting-started-1) provided above.  
 - ```./ExamplePlots/CNView.ExamplePlotA.pdf``` is the path to the desired output file (always will be pdf).  
 - ```--title``` overrides the default title with the subsequently supplied string in quotes.  
-- ```--probs``` prints the average probability of the highlighted window being deleted or duplicated. The p-value is calculated from the average t-score for each bin across the highlighted window.  
+- ```--probs``` prints the probability of the highlighted window being deleted or duplicated. The p-value is calculated by evaluating the t-score at each bin overlapping the highlighted window, combining those p-values with [Fisher's Method](https://en.wikipedia.org/wiki/Fisher%27s_method), then correcting for false discovery rate (FDR) with the [Benjamini-Hochberg procedure](https://en.wikipedia.org/wiki/False_discovery_rate#Benjamini.E2.80.93Hochberg_procedure).  
 
 Running the above code will also print some runtime diagnostics to stdout, which can alternatively be silenced with ```-q```/```--quiet```:  
 ```

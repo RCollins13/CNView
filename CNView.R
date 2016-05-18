@@ -83,6 +83,10 @@ CNView <- function(chr,start,end,            #region to be plotted
   {warning("MASS package not installed.  Attempting to install from CRAN...")
     install.packages("MASS",repos="http://cran.rstudio.com")}
   suppressPackageStartupMessages(library(MASS))
+  if("metap" %in% rownames(installed.packages()) == FALSE)
+  {warning("metap package not installed.  Attempting to install from CRAN...")
+    install.packages("metap",repos="http://cran.rstudio.com/")}
+  library(metap)
   
   ##Parameter cleanup##
   if(!(is.null(highlight))){
@@ -190,11 +194,15 @@ CNView <- function(chr,start,end,            #region to be plotted
   sampIdx <- as.vector(sapply(as.vector(sampleID),function(val){grep(paste("\\b",as.character(val),"\\b",sep=""),
                                                                      colnames(plotSet),ignore.case=F)}))
   
-  ##Output Options##  
+  ##Output Options##  ##Output Options##
   if(plot==T){
     if(!(is.null(output))){
       if(quiet==F){cat(paste("Plotting samples to ",output,"...",sep=""))}
-      pdf(output,width=7,height=(2.7+(1.4*nsamp)))
+      if(nsamp==1){
+        pdf(output,width=7,height=6)
+      }else{
+        pdf(output,width=7,height=(2.7+(1.4*nsamp)))
+      }
     } else {
       if(quiet==F){cat("Plotting samples to screen...")}
     }
@@ -218,9 +226,13 @@ CNView <- function(chr,start,end,            #region to be plotted
         colval <- "gray40"
       }
       for(i in 2:nrow(plotSet)){
-        if(pt(plotSet[i,sampIdx[k]],df=(ncol(plotSet)-8)) >= 1-(0.05/(ncol(plotSet)-7))){
+        if(p.adjust(pt(plotSet[i,sampIdx[k]],df=(ncol(plotSet)-8),
+                       lower.tail=F),
+                    method="fdr",n=ncol(plotSet)-7) <= 0.95){
           colval <- c(colval,"blue")
-        } else if(pt(plotSet[i,sampIdx[k]],df=(ncol(plotSet)-8)) <= 0.05/(ncol(plotSet)-7)){
+        } else if(p.adjust(pt(plotSet[i,sampIdx[k]],df=(ncol(plotSet)-8),
+                              lower.tail=T),
+                           method="fdr",n=ncol(plotSet)-7) <= 0.05){
           colval <- c(colval,"red")
         } else {
           colval <- c(colval,"gray40")
@@ -241,8 +253,8 @@ CNView <- function(chr,start,end,            #region to be plotted
            type="n",xlim=c(max(start-window,0),
                            max(plotSet$Start)),
            if(yscale=="optimize"){
-             ylim=c(min(0,min(plotSet[,sampIdx[k]]))-1,
-                    max(0,max(plotSet[,sampIdx[k]]))+1)
+             ylim=c(min(0,min(plotSet[,sampIdx]))-2,
+                    max(0,max(plotSet[,sampIdx]))+2)
            }else{
              ylim=yscale
            },
@@ -291,24 +303,32 @@ CNView <- function(chr,start,end,            #region to be plotted
                                     lty=3)
                            }
                          }))
-      #Add probabilites, if optioned
+      #Add probabilites, if optioned. t-test for each bin then Fisher's method to combine p-values
       if(probs==T){
         if(!(is.null(highlight))){
           for(i in 1:length(highlight)){
-            pDEL <- pt(mean(plotSet[which(plotSet$End>=highlight[[i]][1] & 
-                                            plotSet$Start<=highlight[[i]][2]),
-                                    sampIdx[k]]),
-                       df=ncol(plotSet)-7,lower.tail=T)
+            pDEL <- p.adjust(sumlog(pt(plotSet[which(plotSet$End>=highlight[[i]][1] & 
+                                                       plotSet$Start<=highlight[[i]][2]),
+                                               sampIdx[k]],
+                                       df=ncol(plotSet)-7,lower.tail=T))$p,
+                             method="fdr",
+                             n=length(plotSet[which(plotSet$End>=highlight[[i]][1] & 
+                                                      plotSet$Start<=highlight[[i]][2]),
+                                              sampIdx[k]]))
             pDEL <- paste(round(as.numeric(strsplit(format(pDEL,scientific=T),split="e")[[1]][1]),3),
                           "E",strsplit(format(pDEL,scientific=T),split="e")[[1]][2],sep="")
-            pDUP <- pt(mean(plotSet[which(plotSet$End>=highlight[[i]][1] & 
-                                            plotSet$Start<=highlight[[i]][2]),
-                                    sampIdx[k]]),
-                       df=ncol(plotSet)-7,lower.tail=F)
+            pDUP <- p.adjust(sumlog(pt(plotSet[which(plotSet$End>=highlight[[i]][1] & 
+                                                       plotSet$Start<=highlight[[i]][2]),
+                                               sampIdx[k]],
+                                       df=ncol(plotSet)-7,lower.tail=F))$p,
+                             method="fdr",
+                             n=length(plotSet[which(plotSet$End>=highlight[[i]][1] & 
+                                                      plotSet$Start<=highlight[[i]][2]),
+                                              sampIdx[k]]))
             pDUP <- paste(round(as.numeric(strsplit(format(pDUP,scientific=T),split="e")[[1]][1]),3),
                           "E",strsplit(format(pDUP,scientific=T),split="e")[[1]][2],sep="")
             text(x=mean(highlight[[i]]),y=par("usr")[3],pos=3,cex=gcex,
-                 labels=paste("p(Del) = ",pDEL,"\np(Dup) = ",pDUP,sep=""))
+                 labels=paste("q(Del) = ",pDEL,"\nq(Dup) = ",pDUP,sep=""))
           }
         }
       }
@@ -366,28 +386,33 @@ CNView <- function(chr,start,end,            #region to be plotted
                font=4,pos=4,cex=rcex*gcex)
         }
         if(legend==T){
+          if(nsamp==1){
+            lcex=0.6
+          }else{
+            lcex=0.8
+          }
           if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) >= 0){
             legend("topright",
-                   legend=c(paste("p(Dup) < Bonferroni (df=",ncol(plotSet)-8,")",sep=""),
-                            paste("p(Del) < Bonferroni (df=",ncol(plotSet)-8,")",sep=""),
+                   legend=c(paste("q(Dup) < 0.05 (df=",ncol(plotSet)-8,")",sep=""),
+                            paste("q(Del) < 0.05 (df=",ncol(plotSet)-8,")",sep=""),
                             "Median t Score",
                             "1 * MAD",
                             "2 * MAD"),
                    pch=c(NA,NA,NA,15,15),pt.cex=c(1,1,1,1.5,1.5)*gcex,
                    lty=c(1,1,2,NA,NA),lwd=c(4,4,1,NA,NA),
                    col=c("blue","red","black","gray54","lightgray"),
-                   bg="white",cex=0.8*gcex)
+                   bg="white",cex=lcex*gcex)
           } else if(max(plotSet[,sampIdx])+min(plotSet[,sampIdx]) < 0){
             legend("bottomright",
-                   legend=c(paste("p(Dup) < Bonferroni (df=",ncol(plotSet)-8,")",sep=""),
-                            paste("p(Del) < Bonferroni (df=",ncol(plotSet)-8,")",sep=""),
+                   legend=c(paste("q(Dup) < 0.05 (df=",ncol(plotSet)-8,")",sep=""),
+                            paste("q(Del) < 0.05 (df=",ncol(plotSet)-8,")",sep=""),
                             "Median t Score",
                             "1 * MAD",
                             "2 * MAD"),
                    pch=c(NA,NA,NA,15,15),pt.cex=c(1,1,1,1.5,1.5)*gcex,
                    lty=c(1,1,2,NA,NA),lwd=c(4,4,1,NA,NA),
                    col=c("blue","red","black","gray54","lightgray"),
-                   bg="white",cex=0.8*gcex)
+                   bg="white",cex=lcex*gcex)
           }
         }
       }

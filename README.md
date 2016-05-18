@@ -134,7 +134,7 @@ This example is visualizing a 46kb deletion of two exons from *PDE11A*. The firs
 - ```~/cov_matrix.bed``` is the path to the input coverage matrix, like the [example](https://github.com/RCollins13/CNView#getting-started-1) provided above.  
 - ```./ExamplePlots/CNView.ExamplePlotA.pdf``` is the path to the desired output file (always will be pdf).  
 - ```--title``` overrides the default title with the subsequently supplied string in quotes.  
-- ```--probs``` prints the probability of the highlighted window being deleted or duplicated. The p-value is calculated by evaluating the t-score at each bin overlapping the highlighted window, combining those p-values with [Fisher's Method](https://en.wikipedia.org/wiki/Fisher%27s_method), then correcting for false discovery rate (FDR) with the [Benjamini-Hochberg procedure](https://en.wikipedia.org/wiki/False_discovery_rate#Benjamini.E2.80.93Hochberg_procedure).  
+- ```--probs``` prints the FDR-corrected probability of the highlighted window being deleted or duplicated. The q-value is calculated by evaluating the t-score at each bin overlapping the highlighted window, combining those p-values with [Fisher's Method](https://en.wikipedia.org/wiki/Fisher%27s_method), then correcting for false discovery rate (FDR) with the [Benjamini-Hochberg procedure](https://en.wikipedia.org/wiki/False_discovery_rate#Benjamini.E2.80.93Hochberg_procedure).  
 
 Running the above code will also print some runtime diagnostics to stdout, which can alternatively be silenced with ```-q```/```--quiet```:  
 ```

@@ -45,7 +45,7 @@ If you use CNView, please cite [Collins et al., 2016](http://biorxiv.org/content
 ###CNView.R  
 Performs joint normalization of binned coverage values across a batch of WGS libraries and facilitates visualization. Also interfaces with UCSC Genome Browser to underlay several annotation tracks.  
 ```
-Usage: ./CNView.R [options] chr start end samples.list covmatrix.bed outfile
+Usage: CNView.R [options] chr start end samples.list covmatrix.bed outfile
 
 Options:
 	-c INTEGER, --compression=INTEGER
@@ -65,6 +65,9 @@ Options:
 
 	-n INTEGER, --normDist=INTEGER
 		distance outside region to use for normalization (both sides) [default 5000000]
+
+	-s INTEGER, --subsample=INTEGER
+		truncate coverage matrix to [s] samples; useful for very large cohorts [default 200]
 
 	--gcex=INTEGER
 		scalar applied to all fonts and legend [default 1]
@@ -95,6 +98,7 @@ Options:
 ```
 **Usage Notes:**  
 1. Several base-level options (such as ```returnData``` or ```plot```) are not wrapped by the Rscript implementation. To access those features, import the R function directly and run from the R command prompt.  
+2. By default, CNView will randomly subsample an input matrix to include only 200 libraries (including those specified to plot). This is a useful parameter to reduce computational requirements (both memory and runtime) for large cohorts, but can be modulated with the ```-s```/```--subsample``` option.  
 
 ---  
 ##Example Usage

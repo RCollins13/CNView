@@ -15,6 +15,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                    window=0,                 #distance to append to both sides of input interval for viewing
                    yscale="optimize",        #vector of values to be represented on y axis
                    normDist=5000000,         #distance outside region to normalize (both sides). Must either be int or "genome"
+                   subsample=200,            #will only load this many samples into memory; useful to reduce runtime & memory reqs for very large cohorts
                    UCSCtracks=c("Gene",      #append UCSC sequence context information; choose either NULL
                                 "SegDup",    #or up to three among "Gene", "Gap", "RepMask", "blacklist", and "SegDup"
                                 "Gap"),
@@ -55,6 +56,12 @@ CNView <- function(chr,start,end,            #region to be plotted
   if(noUnix==T){
     warning('noUnix parameter specified as TRUE; operation speed will be substantially slower')
   }
+  if(length(sampleID)>subsample){
+    subsample <- length(sampleID)
+  }
+  
+  ##Replace All Hyphens with Periods in Sample IDs##
+  sampleID <- gsub("-",".",sampleID)
   
   ##Set preferences##
   options(scipen=1000, #disables scientific notation
@@ -116,6 +123,11 @@ CNView <- function(chr,start,end,            #region to be plotted
     cov <- read.table(subcovmatrix,header=T,sep="\t")
   }
   if(quiet==F){cat(" Complete\n")}
+  
+  ##Drop Columns to Specified Sample Size##
+  cov <- cov[,unique(c(1:3,
+                       as.vector(sapply(head(unique(c(sampleID,sample(names(cov[,-c(1:3)])))),n=subsample),
+                                        function(val){grep(val,colnames(cov),ignore.case=T)}))))]
   
   ##Rebin Helper FX##
   rebin <- function(df,compression){
@@ -604,6 +616,9 @@ option_list <- list(
   make_option(c("-n","--normDist"), type="integer", default=5000000,
               help="distance outside region to use for normalization (both sides) [default %default]",
               metavar="integer"),
+  make_option(c("-s","--subsample"), type="integer", default=200,
+              help="truncate coverage matrix to [s] samples; useful for very large cohorts [default %default]",
+              metavar="integer"),
   make_option("--gcex", type="integer", default=1,
               help="scalar applied to all fonts and legend [default %default]",
               metavar="integer"),
@@ -697,6 +712,7 @@ CNView(chr=args$args[1],
        window=window,
        yscale=yscale,
        normDist=opts$normDist,
+       subsample=opts$subsample,
        UCSCtracks=UCSCtracks,
        genesymbols=!(opts$nogenesymbols),
        probs=opts$probs,

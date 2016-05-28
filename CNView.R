@@ -154,7 +154,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   if(quiet==F){cat("Compressing coverage matrix [")}
   obinsize <- cov[1,3]-cov[1,2]
   if(compression=="optimize"){
-    compression <- round(((end-start)/80)/obinsize,0)
+    compression <- round(((end-start+(2*window))/80)/obinsize,0)
   }
   if(compression<1){
     compression <- 1

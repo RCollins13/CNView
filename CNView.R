@@ -12,7 +12,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                    compression="optimize",   #compression factor for rebinning, if desired
                    highlight=NA,             #list of coordinate pairs; intervals to highlight; defaults to query interval; NULL disables
                    highlightcol="gold",      #vector of colors to shade each highlighted interval
-                   window=0,                 #distance to append to both sides of input interval for viewing
+                   window=NA,                #distance to append to both sides of input interval for viewing; NA = 61.8% on either side
                    yscale="optimize",        #vector of values to be represented on y axis
                    normDist=5000000,         #distance outside region to normalize (both sides). Must either be int or "genome"
                    subsample=200,            #will only load this many samples into memory; useful to reduce runtime & memory reqs for very large cohorts
@@ -42,6 +42,9 @@ CNView <- function(chr,start,end,            #region to be plotted
   suppressWarnings(if(!(is.na(highlight)) & !(is.null(highlight))){
     if(length(highlightcol)!=length(highlight)){
       stop("INPUT ERROR: highlightcol must be same length as intervals to highlight")}})
+  if(is.na(window)){
+    window <- round(0.618*(end-start),0)
+  }
   if(normDist!="genome"){
     if(window>normDist | !(all.equal(window,as.integer(window)))){
       stop('INPUT ERROR: window must be a positive, whole number less than normDist')}

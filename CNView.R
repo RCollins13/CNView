@@ -662,9 +662,21 @@ if(opts$quiet==F){cat("+-------------------+\n| CNView Visualizer |\n|     (c) 2
 if(file.exists(args$args[4])==T){
   if(opts$quiet==F){cat(paste("Reading sample IDs from ",args$args[4],"\n",sep=""))}
   samps <- read.table(args$args[4])[,1]
+  #Add "X" before IDs beginning with number (R doesn't like data frame colnames beginning with numbers)
+  samps <- as.vector(unlist(sapply(samps,function(ID){
+    if(substr(as.character(ID),0,1) %in% 0:9){
+      return(as.character(paste("X",ID,sep="")))
+    }else{
+      return(ID)
+    }
+  })))
 }else{
   if(opts$quiet==F){cat(paste("Sample ID file '",args$args[4],"' not found, assuming single sample ID provided\n",sep=""))}
   samps <- args$args[4]
+  #Add "X" before IDs beginning with number (R doesn't like data frame colnames beginning with numbers)
+  if(substr(as.character(samps),0,1) %in% 0:9){
+    samps <- paste("X",samps,sep="")
+  }
 }
 suppressWarnings(if(!(is.na(opts$highlight)) & !(is.null(opts$highlight))){
   hightable <- read.table(opts$highlight,sep="\t",header=F)[,1:3]

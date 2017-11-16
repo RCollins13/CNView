@@ -112,7 +112,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   ##Subset & Load Plotting Values##
   if(quiet==F){cat("Filtering & loading coverage matrix...")}
   if(noUnix==TRUE){
-    cov <- read.table(covmatrix,header=T,sep="\t")
+    cov <- read.table(covmatrix,header=T,sep="\t",check.names=F)
     cov <- cov[which(cov[,1]==chr & cov[,2]<=end & cov[,3]>=start),]
   }else{
     if(normDist!="genome"){
@@ -123,14 +123,12 @@ CNView <- function(chr,start,end,            #region to be plotted
     }else{
       subcovmatrix <- covmatrix
     }
-    cov <- read.table(subcovmatrix,header=T,sep="\t")
+    cov <- read.table(subcovmatrix,header=T,sep="\t",check.names=F)
   }
   if(quiet==F){cat(" Complete\n")}
   
   ##Drop Columns to Specified Sample Size##
-  cov <- cov[,unique(c(1:3,
-                       as.vector(sapply(head(unique(c(sampleID,sample(names(cov[,-c(1:3)])))),n=subsample),
-                                        function(val){grep(val,colnames(cov),ignore.case=T)}))))]
+  cov <- cov[,unique(c(1:3,as.vector(sapply(head(unique(c(sampleID,sample(names(cov[,-c(1:3)])))),n=subsample),function(val){which(val==colnames(cov))}))))]
   
   ##Rebin Helper FX##
   rebin <- function(df,compression){

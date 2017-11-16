@@ -677,7 +677,7 @@ if(file.exists(args$args[4])==T){
   }
 }
 suppressWarnings(if(!(is.na(opts$highlight)) & !(is.null(opts$highlight))){
-  hightable <- read.table(opts$highlight,sep="\t",header=F)[,1:3]
+  hightable <- read.table(opts$highlight,sep="\t",header=F,comment.char="")[,1:3]
   highopt <- as.list(as.data.frame(t(hightable[,1:2])))
   highcolopt <- as.vector(hightable[,3])
 }else{

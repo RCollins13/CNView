@@ -2,7 +2,7 @@
 
 #CNView: a visualization and annotation tool for copy number variation from whole-genome sequencing
 
-# Copyright (c) 2016 Ryan Collins <rlcollins@g.harvard.edu>
+# Copyright (c) 2017 Ryan Collins <rlcollins@g.harvard.edu>
 # Distributed under terms of the MIT license.
 
 #Main plotting function, called later by Rscript (see bottom of script)
@@ -674,7 +674,7 @@ if(length(args$args) != 6) {
 }
 
 #Prints startup message
-if(opts$quiet==F){cat("+-------------------+\n| CNView Visualizer |\n|     (c) 2016      |\n+-------------------+\n")}
+if(opts$quiet==F){cat("+-------------------+\n| CNView Visualizer |\n|     (c) 2017      |\n+-------------------+\n")}
 
 #Processes arguments & cleans options
 if(file.exists(args$args[4])==T){

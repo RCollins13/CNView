@@ -45,7 +45,7 @@ If you use CNView, please cite our preprint ( [Collins et al., 2016](http://bior
 ### CNView.R  
 Performs joint normalization of binned coverage values across a batch of WGS libraries and facilitates visualization. Also interfaces with UCSC Genome Browser to underlay several annotation tracks.  
 ```
-Usage: /humgen/atgu1/fs03/rcollins/gnomAD_SV//bin/CNView/CNView.R [options] chr start end samples.list covmatrix.bed outfile
+Usage: CNView.R [options] chr start end samples.list covmatrix.bed outfile
 
 
 Options:

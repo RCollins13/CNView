@@ -368,7 +368,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                     round_any(par("usr")[4],2),by=2),
            las=2,cex.axis=gcex)
       mtext(paste("Norm. Depth t Score",sep=""),
-            side=2,line=2,cex=gcex)
+            side=2,line=2.3,cex=gcex)
       #Print Sample ID if >1 sample
       if(nsamp>1){
         if(is.na(panelnames)){

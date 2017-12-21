@@ -27,6 +27,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                    legend=T,                 #logical option to plot legend
                    output=NULL,              #path to output as pdf. If NULL, will plot to active device
                    plot=TRUE,                #logical option to disable plot step; mandatory for output!=NULL
+                   tabix=FALSE,              #logical option to use tabix to index into coverage matrix
                    noUnix=FALSE,             #logical option to specify a non-unix OS (i.e. no awk, needed to read data)
                    returnData=FALSE,         #logical option to return df of all normalized coverage values
                    quiet=FALSE){             #logical option to disable verbose output
@@ -85,6 +86,7 @@ CNView <- function(chr,start,end,            #region to be plotted
   require(plyr)
   require(MASS)
   require(metap)
+  require(Rsamtools)
   
   ##Parameter cleanup##
   if(!(is.null(highlight))){
@@ -105,19 +107,40 @@ CNView <- function(chr,start,end,            #region to be plotted
   }else{
     if(normDist!="genome"){
       subcovmatrix <- tempfile()
-      if(summary(file(covmatrix))$class != "gzfile"){
-        system(paste("head -n1 ",covmatrix," > ",subcovmatrix,sep=""))
-        system(paste("awk -v OFS=\"\t\" '{ if ($1==\"",chr,"\" && $2<=",end+normDist," && $3>=",start-normDist,") print $0 }' ",covmatrix," >> ",
-                     subcovmatrix,sep=""))
+      if(tabix==T){
+        tab.gr <- GRanges(chr,IRanges(start=max(start-normDist,0),end=end+normDist))
+        tab.file <- open(TabixFile(file=covmatrix))
+        header <- unlist(strsplit(headerTabix(tab.file)$header,split="\t"))
+        header[1:3] <- c("chr","start","end")
+        close(tab.file)
+        tab.file <- open(TabixFile(file=covmatrix))
+        cov.dat <- lapply(unlist(scanTabix(tab.file,param=tab.gr)),strsplit,split="\t")
+        cov.dat <- lapply(cov.dat,function(vals){
+          coords <- unlist(vals)[1:3]
+          cov.vals <- as.numeric(unlist(vals)[-c(1:3)])
+          return(c(coords,cov.vals))
+        })
+        cov <- as.data.frame(t(matrix(as.vector(unlist(cov.dat)),ncol=length(cov.dat))))
+        colnames(cov) <- header
+        rownames(cov) <- NULL
+        close(tab.file)
       }else{
-        system(paste("zcat ",covmatrix," | head -n1 > ",subcovmatrix,sep=""))
-        system(paste("zcat ",covmatrix," | awk -v OFS=\"\t\" '{ if ($1==\"",chr,"\" && $2<=",end+normDist," && $3>=",start-normDist,") print $0 }' >> ",
-                     subcovmatrix,sep=""))          
+        if(summary(file(covmatrix))$class != "gzfile"){
+          system(paste("head -n1 ",covmatrix," > ",subcovmatrix,sep=""))
+          system(paste("awk -v OFS=\"\t\" '{ if ($1==\"",chr,"\" && $2<=",end+normDist," && $3>=",start-normDist,") print $0 }' ",covmatrix," >> ",
+                       subcovmatrix,sep=""))
+        }else{
+          system(paste("zcat ",covmatrix," | head -n1 > ",subcovmatrix,sep=""))
+          system(paste("zcat ",covmatrix," | awk -v OFS=\"\t\" '{ if ($1==\"",chr,"\" && $2<=",end+normDist," && $3>=",start-normDist,") print $0 }' >> ",
+                       subcovmatrix,sep=""))          
+        }
       }
     }else{
       subcovmatrix <- covmatrix
     }
-    cov <- read.table(subcovmatrix,header=T,sep="\t",check.names=F,comment.char="")
+    if(tabix==F){
+      cov <- read.table(subcovmatrix,header=T,sep="\t",check.names=F,comment.char="")
+    }
   }
   if(quiet==F){cat(" Complete\n")}
   
@@ -627,6 +650,10 @@ option_list <- list(
               help="disable UCSC track plotting [default %default]"),
   make_option(c("-G","--nogenesymbols"), action="store_true", default=FALSE,
               help="disable gene symbol printing below gene bodies in UCSC tracks [default %default]"),
+  make_option(c(--"tabix"), action="store_true", default=FALSE,
+              help="use tabix to index into coverage matrix [default %default]"),
+  make_option(c("--noUnix"), action="store_true", default=FALSE,
+              help="disable use of unix coreutils [default %default]"),
   make_option(c("-q","--quiet"), action="store_true", default=FALSE,
               help="disable verbose output [default %default]"),
   make_option(c("-l", "--nolegend"), action="store_false", default=TRUE,

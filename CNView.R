@@ -85,7 +85,6 @@ CNView <- function(chr,start,end,            #region to be plotted
   require(plyr)
   require(MASS)
   require(metap)
-  require(optparse)
   
   ##Parameter cleanup##
   if(!(is.null(highlight))){
@@ -580,6 +579,9 @@ CNView <- function(chr,start,end,            #region to be plotted
 
 #Disables factor default
 options(stringsAsFactors=F)
+
+#Loads optparse
+require(optparse)
 
 #list of Rscript options
 option_list <- list(

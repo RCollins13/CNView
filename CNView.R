@@ -123,6 +123,7 @@ CNView <- function(chr,start,end,            #region to be plotted
         cov <- as.data.frame(t(matrix(as.vector(unlist(cov.dat)),ncol=length(cov.dat))))
         colnames(cov) <- header
         rownames(cov) <- NULL
+        cov[,-1] <- apply(cov[,-1],2,as.numeric)
         close(tab.file)
       }else{
         if(summary(file(covmatrix))$class != "gzfile"){

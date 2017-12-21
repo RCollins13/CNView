@@ -650,7 +650,7 @@ option_list <- list(
               help="disable UCSC track plotting [default %default]"),
   make_option(c("-G","--nogenesymbols"), action="store_true", default=FALSE,
               help="disable gene symbol printing below gene bodies in UCSC tracks [default %default]"),
-  make_option(c(--"tabix"), action="store_true", default=FALSE,
+  make_option(c("--tabix"), action="store_true", default=FALSE,
               help="use tabix to index into coverage matrix [default %default]"),
   make_option(c("--noUnix"), action="store_true", default=FALSE,
               help="disable use of unix coreutils [default %default]"),

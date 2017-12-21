@@ -80,23 +80,11 @@ CNView <- function(chr,start,end,            #region to be plotted
     c(v1,v2)[order(c(ord1,ord2))]
   }
   
-  ##Loads required packages; installs if necessary##
-  if("RMySQL" %in% rownames(installed.packages()) == FALSE)
-  {warning("RMySQL package not installed.  Attempting to install from CRAN...")
-    install.packages("RMySQL",repos="http://cran.rstudio.com/")}
-  suppressPackageStartupMessages(library(RMySQL))
-  if("plyr" %in% rownames(installed.packages()) == FALSE)
-  {warning("plyr package not installed.  Attempting to install from CRAN...")
-    install.packages("plyr",repos="http://cran.rstudio.com/")}
-  suppressPackageStartupMessages(library(plyr))
-  if("MASS" %in% rownames(installed.packages()) == FALSE)
-  {warning("MASS package not installed.  Attempting to install from CRAN...")
-    install.packages("MASS",repos="http://cran.rstudio.com")}
-  suppressPackageStartupMessages(library(MASS))
-  if("metap" %in% rownames(installed.packages()) == FALSE)
-  {warning("metap package not installed.  Attempting to install from CRAN...")
-    install.packages("metap",repos="http://cran.rstudio.com/")}
-  library(metap)
+  ##Loads required packages##
+  require(RMySQL)
+  require(plyr)
+  require(MASS)
+  require(metap)
   
   ##Parameter cleanup##
   if(!(is.null(highlight))){

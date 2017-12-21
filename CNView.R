@@ -754,5 +754,7 @@ CNView(chr=args$args[1],
        legend=opts$nolegend,
        output=args$args[6],
        plot=T,
+       tabix=opts$tabix,
+       noUnix=opts$noUnix,
        returnData=F,
        quiet=opts$quiet)

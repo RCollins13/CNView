@@ -110,8 +110,8 @@ CNView <- function(chr,start,end,            #region to be plotted
         system(paste("awk -v OFS=\"\t\" '{ if ($1==\"",chr,"\" && $2<=",end+normDist," && $3>=",start-normDist,") print $0 }' ",covmatrix," >> ",
                      subcovmatrix,sep=""))
       }else{
-        system(paste("zcat ",covmatrix," head -n1 > ",subcovmatrix,sep=""))
-        system(paste("zcat ",covmatrix," awk -v OFS=\"\t\" '{ if ($1==\"",chr,"\" && $2<=",end+normDist," && $3>=",start-normDist,") print $0 }' >> ",
+        system(paste("zcat ",covmatrix," | head -n1 > ",subcovmatrix,sep=""))
+        system(paste("zcat ",covmatrix," | awk -v OFS=\"\t\" '{ if ($1==\"",chr,"\" && $2<=",end+normDist," && $3>=",start-normDist,") print $0 }' >> ",
                      subcovmatrix,sep=""))          
       }
     }else{

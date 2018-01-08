@@ -21,6 +21,7 @@ CNView <- function(chr,start,end,            #region to be plotted
                                 "Gap"),
                    genesymbols=TRUE,         #print gene symbols below UCSC gene body annotations
                    probs=TRUE,               #option to add CNV probabilities below each highlighted interval
+                   gridlines=TRUE,           #option to draw horizontal gridlines behind plot
                    gcex=1,                   #global scaling for all fonts
                    title=NULL,               #option to add custom title. Overrides default
                    panelnames=NA,            #optional vector for custom names printed above each plot; only works for multi-sample plots
@@ -290,9 +291,9 @@ CNView <- function(chr,start,end,            #region to be plotted
              ylim=yscale
            },
            xlab="",xaxt="n",ylab="",xaxs="i",yaxt="n",
-           panel.first=c(abline(h=seq(round_any(par("usr")[3],2),
+           panel.first=c(if(gridlines==T){abline(h=seq(round_any(par("usr")[3],2),
                                       round_any(par("usr")[4],2),by=2),
-                                col="gray80"),
+                                col="gray80")},
                          polygon(y=c(2*plotSet$mad,
                                      rev(-2*plotSet$mad)),
                                  x=c(as.numeric(as.character(plotSet$Start)),
@@ -647,6 +648,8 @@ option_list <- list(
               metavar="character"),
   make_option(c("-p","--probs"), action="store_true", default=FALSE,
               help="add CNV probabilities below each higlighted interval [default %default]"),
+  make_option(c("-g","--gridlines"), action="store_false", default=TRUE,
+              help="add horizontal gridlines to plot background [default %default]"),
   make_option(c("-u","--noUCSC"), action="store_true", default=FALSE,
               help="disable UCSC track plotting [default %default]"),
   make_option(c("-G","--nogenesymbols"), action="store_true", default=FALSE,
@@ -749,6 +752,7 @@ CNView(chr=args$args[1],
        UCSCtracks=UCSCtracks,
        genesymbols=!(opts$nogenesymbols),
        probs=opts$probs,
+       gridlines=opts$gridlines,
        gcex=opts$gcex,
        title=opts$title,
        panelnames=names,

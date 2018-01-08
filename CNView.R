@@ -648,7 +648,7 @@ option_list <- list(
               metavar="character"),
   make_option(c("-p","--probs"), action="store_true", default=FALSE,
               help="add CNV probabilities below each higlighted interval [default %default]"),
-  make_option(c("-g","--gridlines"), action="store_false", default=TRUE,
+  make_option(c("-g","--gridlines"), action="store_true", default=FALSE,
               help="add horizontal gridlines to plot background [default %default]"),
   make_option(c("-u","--noUCSC"), action="store_true", default=FALSE,
               help="disable UCSC track plotting [default %default]"),
